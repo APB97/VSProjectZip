@@ -1,9 +1,17 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using VSProjectZip.Core.Utilities;
 using VSProjectZip.Core.Zipping;
 
-IDirectoryZip zip = new ProjectZip();
+IDirectoryCopier copier = new SkipNamesCopyUtility();
+IDirectoryZip zip = new ProjectZip(copier);
+
 var argument = args.FirstOrDefault();
 if (argument is not null)
 {
-    zip.ZipDirectory(argument);
+    var parentDirectory = new DirectoryInfo(argument).Parent;
+    if (parentDirectory is null)
+    {
+        return;
+    }
+
+    zip.ZipDirectory(argument, parentDirectory.FullName);
 }

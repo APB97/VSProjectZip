@@ -2,6 +2,6 @@
 {
     public interface IDirectoryZip
     {
-        void ZipDirectory(string path);
+        void ZipDirectory(string path, string outputZipPath);
     }
 }

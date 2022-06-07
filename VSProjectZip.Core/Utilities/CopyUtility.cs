@@ -1,20 +1,20 @@
 ﻿namespace VSProjectZip.Core.Utilities
 {
-    public class CopyUtility
+    public class CopyUtility : IDirectoryCopier
     {
-        public void CopyDir(string source, string destination)
+        public void CopyDirectory(string source, string destination)
         {
             if (Directory.Exists(source))
             {
-                CopyDirInternal(source, source, destination);
+                CopyDirectoryInternal(source, source, destination);
             }
         }
 
-        private void CopyDirInternal(string source, string directory, string destination)
+        private void CopyDirectoryInternal(string source, string directory, string destination)
         {
             if (ShouldSkipDirectory(new DirectoryInfo(directory).Name)) return;
             EnsureDestinationExists(destination);
-            CopyDirectories(source, directory, destination);
+            CopySubdirectories(source, directory, destination);
             CopyFiles(source, directory, destination);
         }
 
@@ -26,15 +26,20 @@
             }
         }
 
-        private void CopyDirectories(string source, string directory, string destination)
+        private void CopySubdirectories(string source, string directory, string destination)
         {
             foreach (var subdirectory in Directory.GetDirectories(directory))
             {
-                string? directoryName = new DirectoryInfo(subdirectory).Name;
-                if (directoryName is not null)
-                {
-                    CopyDirInternal(source, subdirectory, destination);
-                }
+                CopySubdirectory(source, destination, subdirectory);
+            }
+        }
+
+        private void CopySubdirectory(string source, string destination, string subdirectory)
+        {
+            string? directoryName = new DirectoryInfo(subdirectory).Name;
+            if (directoryName is not null)
+            {
+                CopyDirectoryInternal(source, subdirectory, destination);
             }
         }
 
@@ -51,7 +56,7 @@
             }
         }
 
-        public void CopyFile(string source, string destination, string file)
+        private void CopyFile(string source, string destination, string file)
         {
             string? fileName = Path.GetFileName(file);
             if (fileName is not null && !ShouldSkipFile(fileName))

@@ -6,16 +6,22 @@ namespace VSProjectZip.Core.Zipping
 {
     public class ProjectZip : IDirectoryZip
     {
-        public void ZipDirectory(string path)
+        private readonly IDirectoryCopier _directoryCopier;
+
+        public ProjectZip(IDirectoryCopier directoryCopier)
+        {
+            _directoryCopier = directoryCopier;
+        }
+
+        public void ZipDirectory(string path, string outputZipPath)
         {
             var rootPathName = new DirectoryInfo(path).Name;
             if (rootPathName is null) return;
 
             string zipName = $"{rootPathName}.zip";
-            var zipFile = Path.Combine(path, zipName);
-            SkipNamesCopyUtility skipNamesCopy = new(additionalFilesToSkip: new HashSet<string>() { zipName });
+            var zipFile = Path.Combine(outputZipPath, zipName);
 
-            using var temp = new TemporaryLocation(AppContext.BaseDirectory, skipNamesCopy, rootPathName);
+            using var temp = new TemporaryLocation(AppContext.BaseDirectory, _directoryCopier, rootPathName);
 
             temp.RecieveDirectoryCopy(path);
 

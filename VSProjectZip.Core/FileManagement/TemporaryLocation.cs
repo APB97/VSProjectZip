@@ -6,12 +6,12 @@ namespace VSProjectZip.Core.FileManagement
     {
         public const string TempLocationName = "temp";
         private readonly string _temporaryPath;
-        private readonly CopyUtility _copyUtility;
+        private readonly IDirectoryCopier _copyUtility;
         private bool disposedValue;
 
         public string TemporaryPath => _temporaryPath;
 
-        public TemporaryLocation(string rootPath, CopyUtility copyUtility, string directoryName)
+        public TemporaryLocation(string rootPath, IDirectoryCopier copyUtility, string directoryName)
         {
             _temporaryPath = Path.Combine(rootPath, TempLocationName, directoryName);
             if (!Directory.Exists(_temporaryPath))
@@ -21,7 +21,7 @@ namespace VSProjectZip.Core.FileManagement
 
         public void RecieveDirectoryCopy(string directory)
         {
-            _copyUtility.CopyDir(directory, _temporaryPath);
+            _copyUtility.CopyDirectory(directory, _temporaryPath);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -41,11 +41,6 @@ namespace VSProjectZip.Core.FileManagement
                 // TODO: set large fields to null
                 disposedValue = true;
             }
-        }
-
-        public void RecieveFileCopy(string source, string file)
-        {
-            _copyUtility.CopyFile(source, _temporaryPath, file);
         }
 
         // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
