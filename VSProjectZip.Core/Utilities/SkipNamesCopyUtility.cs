@@ -1,4 +1,4 @@
-﻿namespace VSProjectZip.Core
+﻿namespace VSProjectZip.Core.Utilities
 {
     public class SkipNamesCopyUtility : CopyUtility
     {
@@ -21,7 +21,7 @@
                 {
                     skipTheseFiles.Add(file);
                 }
-            }    
+            }
         }
 
         protected override bool ShouldSkipDirectory(string directoryName)

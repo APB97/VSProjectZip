@@ -1,4 +1,4 @@
-﻿namespace VSProjectZip.Core
+﻿namespace VSProjectZip.Core.Utilities
 {
     public class CopyUtility
     {

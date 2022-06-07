@@ -1,4 +1,6 @@
-﻿namespace VSProjectZip.Core
+﻿using VSProjectZip.Core.Utilities;
+
+namespace VSProjectZip.Core.FileManagement
 {
     public class TemporaryLocation : IDisposable
     {

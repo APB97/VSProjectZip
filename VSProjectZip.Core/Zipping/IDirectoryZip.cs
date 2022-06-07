@@ -1,4 +1,4 @@
-﻿namespace VSProjectZip.Core
+﻿namespace VSProjectZip.Core.Zipping
 {
     public interface IDirectoryZip
     {

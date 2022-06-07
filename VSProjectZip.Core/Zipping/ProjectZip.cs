@@ -1,6 +1,8 @@
 ﻿using System.IO.Compression;
+using VSProjectZip.Core.FileManagement;
+using VSProjectZip.Core.Utilities;
 
-namespace VSProjectZip.Core
+namespace VSProjectZip.Core.Zipping
 {
     public class ProjectZip : IDirectoryZip
     {
@@ -14,7 +16,7 @@ namespace VSProjectZip.Core
             SkipNamesCopyUtility skipNamesCopy = new(additionalFilesToSkip: new HashSet<string>() { zipName });
 
             using var temp = new TemporaryLocation(AppContext.BaseDirectory, skipNamesCopy, rootPathName);
-            
+
             temp.RecieveDirectoryCopy(path);
 
             if (File.Exists(zipFile))
