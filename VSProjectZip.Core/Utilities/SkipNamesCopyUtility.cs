@@ -2,26 +2,38 @@
 {
     public class SkipNamesCopyUtility : CopyUtility
     {
-        HashSet<string> skipTheseDirectories = new() { "bin", "obj", ".vs", ".git" };
-        HashSet<string> skipTheseFiles = new() { ".gitattributes", ".gitignore" };
+        public static readonly IReadOnlySet<string> DefaultDirectories = new HashSet<string>() { "bin", "obj", ".vs", ".git" };
+        public static readonly IReadOnlySet<string> DefaultFiles = new HashSet<string>() { ".gitattributes", ".gitignore" };
+        private readonly HashSet<string> skipTheseDirectories = new(DefaultDirectories);
+        private readonly HashSet<string> skipTheseFiles = new(DefaultFiles);
 
-        public SkipNamesCopyUtility(IReadOnlySet<string>? additionalDirectoriesToSkip = null, IReadOnlySet<string>? additionalFilesToSkip = null)
+        public IReadOnlySet<string> SkipTheseDirectories => skipTheseDirectories;
+        public IReadOnlySet<string> SkipTheseFiles => skipTheseFiles;
+
+        public void AddFiles(IEnumerable<string> additionalFilesToSkip)
         {
-            if (additionalDirectoriesToSkip is not null)
+            foreach (var file in additionalFilesToSkip)
             {
-                foreach (var directory in additionalDirectoriesToSkip)
-                {
-                    skipTheseDirectories.Add(directory);
-                }
+                skipTheseFiles.Add(file);
             }
+        }
 
-            if (additionalFilesToSkip is not null)
+        public void AddDirectories(IEnumerable<string> additionalDirectoriesToSkip)
+        {
+            foreach (var directory in additionalDirectoriesToSkip)
             {
-                foreach (var file in additionalFilesToSkip)
-                {
-                    skipTheseFiles.Add(file);
-                }
+                skipTheseDirectories.Add(directory);
             }
+        }
+
+        public void ClearFiles()
+        {
+            skipTheseFiles.Clear();
+        }
+
+        public void ClearDirectories()
+        {
+            skipTheseDirectories.Clear();
         }
 
         protected override bool ShouldSkipDirectory(string directoryName)
