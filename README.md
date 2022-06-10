@@ -24,6 +24,7 @@ To use the application you need to pass command-line arguments.
 ```shell
 VSProjectZip.exe <DIRECTORY_TO_ZIP>
 [--outdir=<OUTPUT_DIRECTORY>]
+[--outname=<OUTPUT_NAME>]
 [--override-skipfiles]
 [--override-skipdirs]
 [--skipfiles=<FILES_TO_SKIP>]
@@ -38,7 +39,13 @@ VSProjectZip.exe <DIRECTORY_TO_ZIP>
 
 * `--outdir=<OUTPUT_DIRECTORY>`
 
-	Specifies the output directory where the zip archive will be created in.
+	Specifies the output directory where the zip archive will be created in. If not specified, it will default to `DIRECTORY_TO_ZIP`'s parent directory.
+
+* `--outname=<OUTPUT_NAME>`
+	
+	Specifies the exact filename that the archive will get. If not specified, it will default to `<DIRECTORY_TO_ZIP>`'s name with `.zip` extension.
+
+	For example, users can set the output archive's name to `Project.zip` by passing `--outname="Project.zip"`.
 
 * `--skipfiles=<FILES_TO_SKIP>`
 

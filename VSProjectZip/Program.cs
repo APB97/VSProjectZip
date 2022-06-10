@@ -7,13 +7,17 @@ var mainArgument = args.FirstOrDefault();
 var argValuePairs = parser.AdditionalArguments;
 if (mainArgument is not null)
 {
-    var parentDirectory = new DirectoryInfo(mainArgument).Parent;
+    var directoryToZip = new DirectoryInfo(mainArgument);
+    var parentDirectory = directoryToZip.Parent;
     if (parentDirectory is null)
     {
         return;
     }
 
     string outputDirectory = argValuePairs.TryGetValue("--outdir", out var outDir) && outDir is not null ? outDir : parentDirectory.FullName;
+    string outputName = argValuePairs.TryGetValue("--outname", out var outName) && outName is not null ? outName : $"{directoryToZip.Name}.zip";
+    string outputPath = Path.Combine(outputDirectory, outputName);
+
     bool overrideSkippedDirectories = argValuePairs.TryGetValue("--override-skipdirs", out _);
     bool overrideSkippedFiles = argValuePairs.TryGetValue("--override-skipfiles", out _);
     var skipTheseDirectories =
@@ -39,5 +43,5 @@ if (mainArgument is not null)
     copier.AddDirectories(skipTheseDirectories);
     copier.AddFiles(skipTheseFiles);
     IDirectoryZip zip = new ProjectZip(copier);
-    zip.ZipDirectory(mainArgument, outputDirectory);
+    zip.ZipDirectory(mainArgument, outputPath);
 }

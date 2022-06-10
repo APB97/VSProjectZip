@@ -18,18 +18,15 @@ namespace VSProjectZip.Core.Zipping
             var rootPathName = new DirectoryInfo(path).Name;
             if (rootPathName is null) return;
 
-            string zipName = $"{rootPathName}.zip";
-            var zipFile = Path.Combine(outputZipPath, zipName);
-
             using var temp = new TemporaryLocation(AppContext.BaseDirectory, _directoryCopier, rootPathName);
 
             temp.RecieveDirectoryCopy(path);
 
-            if (File.Exists(zipFile))
+            if (File.Exists(outputZipPath))
             {
-                File.Delete(zipFile);
+                File.Delete(outputZipPath);
             }
-            ZipFile.CreateFromDirectory(temp.TemporaryPath, zipFile);
+            ZipFile.CreateFromDirectory(temp.TemporaryPath, outputZipPath);
         }
     }
 }
