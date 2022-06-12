@@ -1,6 +1,6 @@
 # Visual Studio Project Zip Application
 
-Use this application to create a zip archive of a Visual Studio project without directories like `bin/` and `obj/` or `.vs/` or `.git/` and without .gitignore or .gitattributes.
+Use this application to create a zip archive of a Visual Studio project without directories like `bin/` and `obj/` or `.vs/` or `.git/` and without `.gitignore` or `.gitattributes` files.
 
 ## Features
 
