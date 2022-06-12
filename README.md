@@ -49,7 +49,7 @@ VSProjectZip.exe <DIRECTORY_TO_ZIP>
 
 * `--skipfiles=<FILES_TO_SKIP>`
 
-	Additional files separated by `|` (pipe symbol) that need to be skipped when zipping the specified directory. For example, users can request skipping the `.dockerignore` and `logs.txt` files by passing `--skipfiles=".dockerignore | logs.txt"` (whitesspaces are not mandatory).
+	Additional files separated by `|` (pipe symbol) that need to be skipped when zipping the specified directory. For example, users can request skipping the `.dockerignore` and `logs.txt` files by passing `--skipfiles=".dockerignore | logs.txt"` (whitespaces are not mandatory).
 
 	* `--override-skipfiles`
 
@@ -57,7 +57,7 @@ VSProjectZip.exe <DIRECTORY_TO_ZIP>
 
 * `--skipdirs=<DIRECTORIES_TO_SKIP>`
 
-	Additional directories separated by `|` (pipe symbol) that need to be skipped when zipping the specified directory. For example, users can request skipping the `packages` and `publish` directories by passing `--skipdirs="packages | directories"` (whitesspaces are not mandatory).
+	Additional directories separated by `|` (pipe symbol) that need to be skipped when zipping the specified directory. For example, users can request skipping the `packages` and `publish` directories by passing `--skipdirs="packages | directories"` (whitespaces are not mandatory).
 
 	* `--override-skipdirs`
 
