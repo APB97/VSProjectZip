@@ -1,34 +1,48 @@
-﻿namespace VSProjectZip.Core.Utilities
+﻿using VSProjectZip.Core.FileManagement;
+
+namespace VSProjectZip.Core.Utilities
 {
     public class CopyUtility : IDirectoryCopier
     {
+        private readonly IDirectory _directory;
+        private readonly IFile _file;
+        private readonly IPath _path;
+
+        public CopyUtility(IDirectory directory, IFile file, IPath path)
+        {
+            _directory = directory;
+            _file = file;
+            _path = path;
+        }
+        
         public void CopyDirectory(string source, string destination)
         {
-            if (Directory.Exists(source))
+            if (_directory.Exists(source))
             {
                 CopyDirectoryInternal(source, source, destination);
             }
         }
 
-        private void CopyDirectoryInternal(string source, string directory, string destination)
+        private void CopyDirectoryInternal(string source, string directoryPath, string destination)
         {
-            if (ShouldSkipDirectory(new DirectoryInfo(directory).Name)) return;
+            IDirectoryInfo directoryInfo = new DirectoryInfoImplementation(_directory, directoryPath);
+            if (ShouldSkipDirectory(directoryInfo.Name)) return;
             EnsureDestinationExists(destination);
-            CopySubdirectories(source, directory, destination);
-            CopyFiles(source, directory, destination);
+            CopySubdirectories(source, directoryPath, destination);
+            CopyFiles(source, directoryPath, destination);
         }
 
         private void EnsureDestinationExists(string destination)
         {
-            if (!Directory.Exists(destination))
+            if (!_directory.Exists(destination))
             {
-                Directory.CreateDirectory(destination);
+                _directory.CreateDirectory(destination);
             }
         }
 
         private void CopySubdirectories(string source, string directory, string destination)
         {
-            foreach (var subdirectory in Directory.GetDirectories(directory))
+            foreach (var subdirectory in _directory.GetDirectories(directory))
             {
                 CopySubdirectory(source, destination, subdirectory);
             }
@@ -36,11 +50,7 @@
 
         private void CopySubdirectory(string source, string destination, string subdirectory)
         {
-            string? directoryName = new DirectoryInfo(subdirectory).Name;
-            if (directoryName is not null)
-            {
-                CopyDirectoryInternal(source, subdirectory, destination);
-            }
+            CopyDirectoryInternal(source, subdirectory, destination);
         }
 
         protected virtual bool ShouldSkipDirectory(string directoryName)
@@ -50,7 +60,7 @@
 
         private void CopyFiles(string source, string directory, string destination)
         {
-            foreach (var file in Directory.GetFiles(directory))
+            foreach (var file in _directory.GetFiles(directory))
             {
                 CopyFile(source, destination, file);
             }
@@ -58,15 +68,15 @@
 
         private void CopyFile(string source, string destination, string file)
         {
-            string? fileName = Path.GetFileName(file);
+            string? fileName = _path.GetFileName(file);
             if (fileName is not null && !ShouldSkipFile(fileName))
             {
-                string relativePath = Path.GetRelativePath(source, file);
-                string destinationFileName = Path.Combine(destination, relativePath);
-                string? destinationDirectoryName = Path.GetDirectoryName(destinationFileName);
+                string relativePath = _path.GetRelativePath(source, file);
+                string destinationFileName = _path.Combine(destination, relativePath);
+                string? destinationDirectoryName = _path.GetDirectoryName(destinationFileName);
                 if (destinationDirectoryName is null) return;
                 EnsureDestinationExists(destinationDirectoryName);
-                File.Copy(file, destinationFileName, true);
+                _file.Copy(file, destinationFileName, true);
             }
         }
 

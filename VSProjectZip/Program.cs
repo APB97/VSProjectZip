@@ -1,4 +1,5 @@
-﻿using VSProjectZip.Core.Parsing;
+﻿using VSProjectZip.Core.FileManagement;
+using VSProjectZip.Core.Parsing;
 using VSProjectZip.Core.Utilities;
 using VSProjectZip.Core.Zipping;
 
@@ -28,7 +29,8 @@ if (mainArgument is not null)
         argValuePairs.TryGetValue("--skipfiles", out var skipFiles) && skipFiles is not null
         ? skipFiles.ParseListArgument()
         : Enumerable.Empty<string>();
-    SkipNamesCopyUtility copier = new();
+    var directoryImplementation = new DirectoryImplementation();
+    SkipNamesCopyUtility copier = new(directoryImplementation, new FileImplementation(), new PathImplementation());
 
     if (overrideSkippedDirectories)
     {
@@ -42,6 +44,6 @@ if (mainArgument is not null)
 
     copier.AddDirectories(skipTheseDirectories);
     copier.AddFiles(skipTheseFiles);
-    IDirectoryZip zip = new ProjectZip(copier);
+    IDirectoryZip zip = new ProjectZip(copier, directoryImplementation);
     zip.ZipDirectory(mainArgument, outputPath);
 }
