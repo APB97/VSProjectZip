@@ -29,8 +29,11 @@ if (mainArgument is not null)
         argValuePairs.TryGetValue("--skipfiles", out var skipFiles) && skipFiles is not null
         ? skipFiles.ParseListArgument()
         : Enumerable.Empty<string>();
-    var directoryImplementation = new DirectoryImplementation();
-    SkipNamesCopyUtility copier = new(directoryImplementation, new FileImplementation(), new PathImplementation());
+    
+    IDirectory directoryImplementation = new DirectoryImplementation();
+    IPath pathImplementation = new PathImplementation();
+    SkipNamesCopyUtility copier = new(directoryImplementation, new FileImplementation(), pathImplementation);
+    var rootPathName = directoryToZip.Name;
 
     if (overrideSkippedDirectories)
     {
@@ -44,6 +47,8 @@ if (mainArgument is not null)
 
     copier.AddDirectories(skipTheseDirectories);
     copier.AddFiles(skipTheseFiles);
-    IDirectoryZip zip = new ProjectZip(copier, directoryImplementation);
+    string temporaryPath = pathImplementation.Combine(AppContext.BaseDirectory, TemporaryLocation.TempLocationName, rootPathName);
+    ITemporaryLocation temp = new TemporaryLocation(directoryImplementation, temporaryPath);
+    IDirectoryZip zip = new ProjectZip(copier, temp);
     zip.ZipDirectory(mainArgument, outputPath);
 }

@@ -1,33 +1,39 @@
 ﻿using System.IO.Compression;
-using VSProjectZip.Core.FileManagement;
 using VSProjectZip.Core.Utilities;
 
 namespace VSProjectZip.Core.Zipping
 {
     public class ProjectZip : IDirectoryZip
     {
-        private readonly IDirectory _directory;
         private readonly IDirectoryCopier _directoryCopier;
+        private readonly ITemporaryLocation _temporaryLocation;
 
-        public ProjectZip(IDirectoryCopier directoryCopier, IDirectory directory)
+        public ProjectZip(IDirectoryCopier directoryCopier, ITemporaryLocation temporaryLocation)
         {
             _directoryCopier = directoryCopier;
-            _directory = directory;
+            _temporaryLocation = temporaryLocation;
         }
 
         public void ZipDirectory(string path, string outputZipPath)
         {
-            var rootPathName = new DirectoryInfo(path).Name;
+            _temporaryLocation.CreateIfDoesNotExist();
+            ZipDirectoryUsingTemporaryLocation(path, outputZipPath);
+            _temporaryLocation.DeleteIfExists();
+        }
 
-            using var temp = new TemporaryLocation(AppContext.BaseDirectory, _directoryCopier, rootPathName, _directory, new PathImplementation());
+        private void ZipDirectoryUsingTemporaryLocation(string path, string outputZipPath)
+        {
+            _directoryCopier.CopyDirectory(path, _temporaryLocation.TemporaryPath);
+            DeleteIfExist(outputZipPath);
+            ZipFile.CreateFromDirectory(_temporaryLocation.TemporaryPath, outputZipPath);
+        }
 
-            temp.ReceiveDirectoryCopy(path);
-
+        private static void DeleteIfExist(string outputZipPath)
+        {
             if (File.Exists(outputZipPath))
             {
                 File.Delete(outputZipPath);
             }
-            ZipFile.CreateFromDirectory(temp.TemporaryPath, outputZipPath);
         }
     }
 }
