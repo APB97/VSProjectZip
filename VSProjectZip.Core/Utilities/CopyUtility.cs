@@ -25,7 +25,7 @@ namespace VSProjectZip.Core.Utilities
 
         private void CopyDirectoryInternal(string source, string directoryPath, string destination)
         {
-            IDirectoryInfo directoryInfo = new DirectoryInfoImplementation(_directory, directoryPath);
+            IDirectoryInfo directoryInfo = new DirectoryInfoImplementation(directoryPath);
             if (ShouldSkipDirectory(directoryInfo.Name)) return;
             EnsureDestinationExists(destination);
             CopySubdirectories(source, directoryPath, destination);
