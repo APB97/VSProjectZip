@@ -32,7 +32,8 @@ if (mainArgument is not null)
     
     IDirectory directoryImplementation = new DirectoryImplementation();
     IPath pathImplementation = new PathImplementation();
-    SkipNamesCopyUtility copier = new(directoryImplementation, new FileImplementation(), pathImplementation);
+    IFile fileImplementation = new FileImplementation();
+    SkipNamesCopyUtility copier = new(directoryImplementation, fileImplementation, pathImplementation);
     var rootPathName = directoryToZip.Name;
 
     if (overrideSkippedDirectories)
@@ -49,6 +50,6 @@ if (mainArgument is not null)
     copier.AddFiles(skipTheseFiles);
     string temporaryPath = pathImplementation.Combine(AppContext.BaseDirectory, TemporaryLocation.TempLocationName, rootPathName);
     ITemporaryLocation temp = new TemporaryLocation(directoryImplementation, temporaryPath);
-    IDirectoryZip zip = new ProjectZip(copier, temp);
+    IDirectoryZip zip = new ProjectZip(copier, temp, fileImplementation, new ZipFileImplementation());
     zip.ZipDirectory(mainArgument, outputPath);
 }
