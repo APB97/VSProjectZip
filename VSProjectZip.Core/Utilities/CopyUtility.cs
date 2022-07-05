@@ -1,4 +1,5 @@
-﻿using VSProjectZip.Core.FileManagement;
+﻿using System.Diagnostics;
+using VSProjectZip.Core.FileManagement;
 
 namespace VSProjectZip.Core.Utilities
 {
@@ -74,7 +75,7 @@ namespace VSProjectZip.Core.Utilities
                 string relativePath = _path.GetRelativePath(source, file);
                 string destinationFileName = _path.Combine(destination, relativePath);
                 string? destinationDirectoryName = _path.GetDirectoryName(destinationFileName);
-                if (destinationDirectoryName is null) return;
+                Debug.Assert(destinationDirectoryName != null, nameof(destinationDirectoryName) + " != null");
                 EnsureDestinationExists(destinationDirectoryName);
                 _file.Copy(file, destinationFileName, true);
             }
