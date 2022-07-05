@@ -6,19 +6,22 @@ namespace VSProjectZip.Core.Tests;
 
 public class CopyUtilityTests
 {
+    // disable warning about uninitialized field(s)
+#pragma warning disable CS8618
     private CopyUtility _copier;
-    private Mock<IDirectory> directoryMock;
-    private Mock<IFile> fileMock;
-    private Mock<IPath> pathMock;
+    private Mock<IDirectory> _directoryMock;
+    private Mock<IFile> _fileMock;
+    private Mock<IPath> _pathMock;
+#pragma warning restore CS8618
 
     [SetUp]
     public void Setup()
     {
-        directoryMock = new Mock<IDirectory>();
-        fileMock = new Mock<IFile>();
-        pathMock = new Mock<IPath>();
+        _directoryMock = new Mock<IDirectory>();
+        _fileMock = new Mock<IFile>();
+        _pathMock = new Mock<IPath>();
         
-        _copier = new CopyUtility(directoryMock.Object, fileMock.Object, pathMock.Object);
+        _copier = new CopyUtility(_directoryMock.Object, _fileMock.Object, _pathMock.Object);
     }
 
     [Test]
@@ -26,12 +29,12 @@ public class CopyUtilityTests
     {
         string source = "C:/FakeDirectory";
         string destination = "C:/AnotherFakeDirectory";
-        directoryMock.Setup(dir => dir.Exists(destination)).Returns(false);
-        directoryMock.Setup(dir => dir.Exists(source)).Returns(true);
+        _directoryMock.Setup(dir => dir.Exists(destination)).Returns(false);
+        _directoryMock.Setup(dir => dir.Exists(source)).Returns(true);
 
         _copier.CopyDirectory(source, destination);
         
-        directoryMock.Verify(dir => dir.CreateDirectory(destination));
+        _directoryMock.Verify(dir => dir.CreateDirectory(destination));
     }
     
     [Test]
@@ -39,12 +42,12 @@ public class CopyUtilityTests
     {
         string source = "C:/FakeDirectory";
         string destination = "C:/AnotherFakeDirectory";
-        directoryMock.Setup(dir => dir.Exists(destination)).Returns(true);
-        directoryMock.Setup(dir => dir.Exists(source)).Returns(true);
+        _directoryMock.Setup(dir => dir.Exists(destination)).Returns(true);
+        _directoryMock.Setup(dir => dir.Exists(source)).Returns(true);
 
         _copier.CopyDirectory(source, destination);
         
-        directoryMock.Verify(dir => dir.CreateDirectory(destination), Times.Never);
+        _directoryMock.Verify(dir => dir.CreateDirectory(destination), Times.Never);
     }
 
     [Test]
@@ -52,22 +55,22 @@ public class CopyUtilityTests
     {
         string source = "C:/FakeDirectory";
         string destination = "C:/AnotherFakeDirectory";
-        directoryMock.Setup(dir => dir.Exists(destination)).Returns(true);
-        directoryMock.Setup(dir => dir.Exists(source)).Returns(true);
+        _directoryMock.Setup(dir => dir.Exists(destination)).Returns(true);
+        _directoryMock.Setup(dir => dir.Exists(source)).Returns(true);
         
         string fileName = "fakeFile.txt";
         string fullFilePath = $"{source}/{fileName}";
         string destinationFileName = $"{destination}/{fileName}";
-        directoryMock.Setup(directory => directory.GetFiles(source)).Returns(new[] { fullFilePath });
+        _directoryMock.Setup(directory => directory.GetFiles(source)).Returns(new[] { fullFilePath });
 
-        pathMock.Setup(path => path.GetFileName(fullFilePath)).Returns(fileName);
-        pathMock.Setup(path => path.GetRelativePath(source, fullFilePath)).Returns(fileName);
-        pathMock.Setup(path => path.GetDirectoryName(destinationFileName)).Returns(destination);
-        pathMock.Setup(path => path.Combine(destination, fileName)).Returns(destinationFileName);
+        _pathMock.Setup(path => path.GetFileName(fullFilePath)).Returns(fileName);
+        _pathMock.Setup(path => path.GetRelativePath(source, fullFilePath)).Returns(fileName);
+        _pathMock.Setup(path => path.GetDirectoryName(destinationFileName)).Returns(destination);
+        _pathMock.Setup(path => path.Combine(destination, fileName)).Returns(destinationFileName);
         
         _copier.CopyDirectory(source, destination);
         
-        fileMock.Verify(file => file.Copy(fullFilePath, destinationFileName, true), Times.Once);
+        _fileMock.Verify(file => file.Copy(fullFilePath, destinationFileName, true), Times.Once);
     }
     
     [Test]
@@ -75,23 +78,23 @@ public class CopyUtilityTests
     {
         string source = "C:/FakeDirectory";
         string destination = "C:/AnotherFakeDirectory";
-        directoryMock.Setup(dir => dir.Exists(destination)).Returns(true);
-        directoryMock.Setup(dir => dir.Exists(source)).Returns(true);
+        _directoryMock.Setup(dir => dir.Exists(destination)).Returns(true);
+        _directoryMock.Setup(dir => dir.Exists(source)).Returns(true);
 
         string directoryName = "fakeSubDirectory";
         string fileName = "fakeFile.txt";
         string relativePath = $"{directoryName}/{fileName}";
         string fullFilePath = $"{source}/{relativePath}";
         string destinationFileName = $"{destination}/{relativePath}";
-        directoryMock.Setup(directory => directory.GetFiles(source)).Returns(new[] { fullFilePath });
+        _directoryMock.Setup(directory => directory.GetFiles(source)).Returns(new[] { fullFilePath });
 
-        pathMock.Setup(path => path.GetFileName(fullFilePath)).Returns(fileName);
-        pathMock.Setup(path => path.GetRelativePath(source, fullFilePath)).Returns(relativePath);
-        pathMock.Setup(path => path.GetDirectoryName(destinationFileName)).Returns($"{destination}/{directoryName}");
-        pathMock.Setup(path => path.Combine(destination, relativePath)).Returns(destinationFileName);
+        _pathMock.Setup(path => path.GetFileName(fullFilePath)).Returns(fileName);
+        _pathMock.Setup(path => path.GetRelativePath(source, fullFilePath)).Returns(relativePath);
+        _pathMock.Setup(path => path.GetDirectoryName(destinationFileName)).Returns($"{destination}/{directoryName}");
+        _pathMock.Setup(path => path.Combine(destination, relativePath)).Returns(destinationFileName);
         
         _copier.CopyDirectory(source, destination);
         
-        fileMock.Verify(file => file.Copy(fullFilePath, destinationFileName, true), Times.Once);
+        _fileMock.Verify(file => file.Copy(fullFilePath, destinationFileName, true), Times.Once);
     }
 }
