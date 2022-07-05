@@ -7,11 +7,14 @@ namespace VSProjectZip.Core.Tests;
 [TestFixture]
 public class SkipNamesCopyUtilityTests
 {
+    // disable warning about uninitialized field(s)
+#pragma warning disable CS8618
     private Mock<IDirectory> directoryMock;
     private Mock<IFile> fileMock;
     private Mock<IPath> pathMock;
     private SkipNamesCopyUtility skipNamesCopyUtility;
-
+#pragma warning restore CS8618
+    
     [SetUp]
     public void Setup()
     {
