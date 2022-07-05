@@ -51,7 +51,7 @@ public class CopyUtilityTests
     }
 
     [Test]
-    public void Copy_Directory_CopiesFileAtDirectoryRoot()
+    public void CopyDirectory_CopiesFileAtDirectoryRoot()
     {
         string source = "C:/FakeDirectory";
         string destination = "C:/AnotherFakeDirectory";
@@ -74,7 +74,7 @@ public class CopyUtilityTests
     }
     
     [Test]
-    public void Copy_Directory_CopiesFileAtSubdirectory()
+    public void CopyDirectory_CopiesFileAtSubdirectory()
     {
         string source = "C:/FakeDirectory";
         string destination = "C:/AnotherFakeDirectory";
@@ -86,11 +86,14 @@ public class CopyUtilityTests
         string relativePath = $"{directoryName}/{fileName}";
         string fullFilePath = $"{source}/{relativePath}";
         string destinationFileName = $"{destination}/{relativePath}";
-        _directoryMock.Setup(directory => directory.GetFiles(source)).Returns(new[] { fullFilePath });
-
+        string subdirectoryFullPath = $"{source}/{directoryName}";
+        _directoryMock.Setup(directory => directory.GetFiles(source)).Returns(Array.Empty<string>());
+        _directoryMock.Setup(directory => directory.GetDirectories(source)).Returns(new[] { subdirectoryFullPath });
+        _directoryMock.Setup(directory => directory.GetFiles(subdirectoryFullPath)).Returns(new[] { fullFilePath });
+        
         _pathMock.Setup(path => path.GetFileName(fullFilePath)).Returns(fileName);
         _pathMock.Setup(path => path.GetRelativePath(source, fullFilePath)).Returns(relativePath);
-        _pathMock.Setup(path => path.GetDirectoryName(destinationFileName)).Returns($"{destination}/{directoryName}");
+        _pathMock.Setup(path => path.GetDirectoryName(destinationFileName)).Returns(directoryName);
         _pathMock.Setup(path => path.Combine(destination, relativePath)).Returns(destinationFileName);
         
         _copier.CopyDirectory(source, destination);
