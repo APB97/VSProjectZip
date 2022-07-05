@@ -9,48 +9,48 @@ public class SkipNamesCopyUtilityTests
 {
     // disable warning about uninitialized field(s)
 #pragma warning disable CS8618
-    private Mock<IDirectory> directoryMock;
-    private Mock<IFile> fileMock;
-    private Mock<IPath> pathMock;
-    private SkipNamesCopyUtility skipNamesCopyUtility;
+    private Mock<IDirectory> _directoryMock;
+    private Mock<IFile> _fileMock;
+    private Mock<IPath> _pathMock;
+    private SkipNamesCopyUtility _skipNamesCopyUtility;
 #pragma warning restore CS8618
-    
+
     [SetUp]
     public void Setup()
     {
-        directoryMock = new Mock<IDirectory>();
-        fileMock = new Mock<IFile>();
-        pathMock = new Mock<IPath>();
+        _directoryMock = new Mock<IDirectory>();
+        _fileMock = new Mock<IFile>();
+        _pathMock = new Mock<IPath>();
 
-        skipNamesCopyUtility = new SkipNamesCopyUtility(directoryMock.Object, fileMock.Object, pathMock.Object);
+        _skipNamesCopyUtility = new SkipNamesCopyUtility(_directoryMock.Object, _fileMock.Object, _pathMock.Object);
     }
 
     [Test]
     public void AfterCreation_SkipTheseFilesIsNotEmpty()
     {
-        Assert.That(skipNamesCopyUtility.SkipTheseFiles, Is.Not.Empty);
+        Assert.That(_skipNamesCopyUtility.SkipTheseFiles, Is.Not.Empty);
     }
     
     [Test]
     public void ClearFiles_EmptiesSkipTheseFilesSet()
     {
-        skipNamesCopyUtility.ClearFiles();
+        _skipNamesCopyUtility.ClearFiles();
         
-        Assert.That(skipNamesCopyUtility.SkipTheseFiles, Is.Empty);
+        Assert.That(_skipNamesCopyUtility.SkipTheseFiles, Is.Empty);
     }
     
     [Test]
     public void AfterCreation_SkipTheseDirectoriesIsNotEmpty()
     {
-        Assert.That(skipNamesCopyUtility.SkipTheseDirectories, Is.Not.Empty);
+        Assert.That(_skipNamesCopyUtility.SkipTheseDirectories, Is.Not.Empty);
     }
     
     [Test]
     public void ClearFiles_EmptiesSkipTheseDirectoriesSet()
     {
-        skipNamesCopyUtility.ClearDirectories();
+        _skipNamesCopyUtility.ClearDirectories();
         
-        Assert.That(skipNamesCopyUtility.SkipTheseDirectories, Is.Empty);
+        Assert.That(_skipNamesCopyUtility.SkipTheseDirectories, Is.Empty);
     }
 
     [Test]
@@ -60,9 +60,9 @@ public class SkipNamesCopyUtilityTests
         string file2 = "skipAnotherOne";
         var files = new[] { file1, file2 };
 
-        skipNamesCopyUtility.AddFiles(files);
+        _skipNamesCopyUtility.AddFiles(files);
         
-        Assert.That(skipNamesCopyUtility.SkipTheseFiles, Contains.Item(file1).And.Contains(file2));
+        Assert.That(_skipNamesCopyUtility.SkipTheseFiles, Contains.Item(file1).And.Contains(file2));
     }
 
     [Test]
@@ -72,8 +72,8 @@ public class SkipNamesCopyUtilityTests
         string directory2 = "skipThatDirectory";
         var directories = new[] { directory1, directory2 };
         
-        skipNamesCopyUtility.AddDirectories(directories);
+        _skipNamesCopyUtility.AddDirectories(directories);
         
-        Assert.That(skipNamesCopyUtility.SkipTheseDirectories, Contains.Item(directory1).And.Contains(directory2));
+        Assert.That(_skipNamesCopyUtility.SkipTheseDirectories, Contains.Item(directory1).And.Contains(directory2));
     }
 }
