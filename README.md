@@ -57,7 +57,7 @@ VSProjectZip.exe <DIRECTORY_TO_ZIP>
 
 * `--skipdirs=<DIRECTORIES_TO_SKIP>`
 
-	Additional directories separated by `|` (pipe symbol) that need to be skipped when zipping the specified directory. For example, users can request skipping the `packages` and `publish` directories by passing `--skipdirs="packages | directories"` (whitespaces are not mandatory).
+	Additional directories separated by `|` (pipe symbol) that need to be skipped when zipping the specified directory. For example, users can request skipping the `packages` and `publish` directories by passing `--skipdirs="packages | publish"` (whitespaces are not mandatory).
 
 	* `--override-skipdirs`
 
