@@ -1,6 +1,6 @@
 ﻿using VSProjectZip.Core.Parsing;
 
-namespace VSProjectZip.Core.Tests;
+namespace VSProjectZip.Core.Tests.Parsing;
 
 [TestFixture]
 public class ArgumentParserTests

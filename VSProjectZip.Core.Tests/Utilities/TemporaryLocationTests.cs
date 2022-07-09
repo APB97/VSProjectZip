@@ -2,7 +2,7 @@
 using VSProjectZip.Core.FileManagement;
 using VSProjectZip.Core.Utilities;
 
-namespace VSProjectZip.Core.Tests;
+namespace VSProjectZip.Core.Tests.Utilities;
 
 [TestFixture]
 public class TemporaryLocationTests

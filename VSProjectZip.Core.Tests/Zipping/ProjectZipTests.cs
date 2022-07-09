@@ -3,7 +3,7 @@ using VSProjectZip.Core.FileManagement;
 using VSProjectZip.Core.Utilities;
 using VSProjectZip.Core.Zipping;
 
-namespace VSProjectZip.Core.Tests;
+namespace VSProjectZip.Core.Tests.Zipping;
 
 [TestFixture]
 public class ProjectZipTests
