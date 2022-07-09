@@ -80,7 +80,8 @@ public class SkipNamesCopyUtilityTests
     [Test]
     public void CopyDirectory_SkipsFileWhenItsNameIsInSkippedFilesSet()
     {
-        string source = "C:/FakeDirectory";
+        string fakeDirectory = "FakeDirectory";
+        string source = $"C:/{fakeDirectory}";
         string destination = "C:/AnotherFakeDirectory";
         _directoryMock.Setup(dir => dir.Exists(destination)).Returns(true);
         _directoryMock.Setup(dir => dir.Exists(source)).Returns(true);
@@ -93,6 +94,7 @@ public class SkipNamesCopyUtilityTests
         _pathMock.Setup(path => path.GetFileName(fullFilePath)).Returns(fileName);
         _pathMock.Setup(path => path.GetRelativePath(source, fullFilePath)).Returns(fileName);
         _pathMock.Setup(path => path.GetDirectoryName(destinationFileName)).Returns(destination);
+        _pathMock.Setup(path => path.GetDirectoryName(source)).Returns(fakeDirectory);
         _pathMock.Setup(path => path.Combine(destination, fileName)).Returns(destinationFileName);
         
         _skipNamesCopyUtility.ClearFiles();
@@ -106,7 +108,8 @@ public class SkipNamesCopyUtilityTests
     [Test]
     public void CopyDirectory_SkipsFileInSkippedDirectory()
     {
-        string source = "C:/FakeDirectory";
+        string fakeDirectory = "FakeDirectory";
+        string source = $"C:/{fakeDirectory}";
         string destination = "C:/AnotherFakeDirectory";
         _directoryMock.Setup(dir => dir.Exists(destination)).Returns(true);
         _directoryMock.Setup(dir => dir.Exists(source)).Returns(true);
@@ -124,6 +127,7 @@ public class SkipNamesCopyUtilityTests
         _pathMock.Setup(path => path.GetFileName(fullFilePath)).Returns(fileName);
         _pathMock.Setup(path => path.GetRelativePath(source, fullFilePath)).Returns(relativePath);
         _pathMock.Setup(path => path.GetDirectoryName(destinationFileName)).Returns(directoryName);
+        _pathMock.Setup(path => path.GetDirectoryName(source)).Returns(fakeDirectory);
         _pathMock.Setup(path => path.Combine(destination, relativePath)).Returns(destinationFileName);
         
         _skipNamesCopyUtility.ClearDirectories();
