@@ -9,6 +9,7 @@ public class DirectoryImplementation : IDirectory
 
     public IDirectoryInfo CreateDirectory(string path)
     {
+        Directory.CreateDirectory(path);
         return new DirectoryInfoImplementation(path);
     }
 
