@@ -18,6 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\VSProjectZip.Core.StandardIO\VSProjectZip.Core.StandardIO.csproj" />
       <ProjectReference Include="..\VSProjectZip.Core\VSProjectZip.Core.csproj" />
     </ItemGroup>
 
