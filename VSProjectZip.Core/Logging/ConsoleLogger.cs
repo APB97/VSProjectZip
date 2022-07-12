@@ -1,9 +1,20 @@
-﻿namespace VSProjectZip.Core.Logging;
+﻿using VSProjectZip.Core.StandardIO.Output;
+
+namespace VSProjectZip.Core.Logging;
 
 public class ConsoleLogger : ILogger
 {
+    private readonly IConsoleOutput _consoleOutput;
+
+    public ConsoleLogger(IConsoleOutput consoleOutput)
+    {
+        _consoleOutput = consoleOutput;
+    }
+
+
     public void Info(string value)
     {
+        _consoleOutput.Color = ConsoleColor.White;
     }
 
     public void Warn(string value)

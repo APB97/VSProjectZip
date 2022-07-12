@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\VSProjectZip.Core.FileManagement\VSProjectZip.Core.FileManagement.csproj" />
+    <ProjectReference Include="..\VSProjectZip.Core.StandardIO\VSProjectZip.Core.StandardIO.csproj" />
   </ItemGroup>
 
 </Project>

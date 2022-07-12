@@ -11,7 +11,7 @@ public class ConsoleLoggerTests
     public void ConsoleLogger_Info_SetsColorToWhite()
     {
         Mock<IConsoleOutput> consoleOutputMock = new Mock<IConsoleOutput>();
-        ConsoleLogger logger = new ConsoleLogger();
+        ConsoleLogger logger = new ConsoleLogger(consoleOutputMock.Object);
         
         logger.Info("Sample text");
         
