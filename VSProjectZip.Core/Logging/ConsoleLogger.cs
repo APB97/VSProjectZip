@@ -15,6 +15,7 @@ public class ConsoleLogger : ILogger
     public void Info(string value)
     {
         _consoleOutput.Color = ConsoleColor.White;
+        _consoleOutput.WriteLine(value);
     }
 
     public void Warn(string value)
