@@ -7,40 +7,45 @@ namespace VSProjectZip.Core.Tests.Logging;
 [TestFixture]
 public class ConsoleLoggerTests
 {
+    private const string SampleText = "Sample text";
+    private ConsoleLogger _consoleLogger = null!;
+    private Mock<IConsoleOutput> _consoleOutputMock = null!;
+
+    [SetUp]
+    public void Setup()
+    {
+        _consoleOutputMock = new Mock<IConsoleOutput>();
+        _consoleLogger = new ConsoleLogger(_consoleOutputMock.Object);
+    }
+    
     [Test]
     public void ConsoleLogger_Info_SetsColorToWhite()
     {
-        Mock<IConsoleOutput> consoleOutputMock = new Mock<IConsoleOutput>();
-        ConsoleLogger logger = new ConsoleLogger(consoleOutputMock.Object);
+        _consoleLogger.Info(SampleText);
         
-        logger.Info("Sample text");
         
-        consoleOutputMock.VerifySet(output => output.Color = ConsoleColor.White, Times.AtLeastOnce);
+        _consoleOutputMock.VerifySet(output => output.Color = ConsoleColor.White, Times.AtLeastOnce);
     }
 
     [Test]
     public void ConsoleLogger_Info_CallsWriteLineWithItsArgument()
     {
-        Mock<IConsoleOutput> consoleOutputMock = new Mock<IConsoleOutput>();
-        ConsoleLogger logger = new ConsoleLogger(consoleOutputMock.Object);
-        const string sampleText = "Sample text";
-
-        logger.Info(sampleText);
+        _consoleLogger.Info(SampleText);
         
-        consoleOutputMock.Verify(output => output.WriteLine(sampleText));
+        
+        _consoleOutputMock.Verify(output => output.WriteLine(SampleText));
     }
 
     [Test]
     public void ConsoleLogger_Info_RestoresPreviousColorAfterwards()
     {
-        Mock<IConsoleOutput> consoleOutputMock = new Mock<IConsoleOutput>();
-        ConsoleLogger logger = new ConsoleLogger(consoleOutputMock.Object);
-        const string sampleText = "Sample text";
         const ConsoleColor previousColor = ConsoleColor.Blue;
-        consoleOutputMock.SetupProperty(output => output.Color, previousColor);
+        _consoleOutputMock.SetupProperty(output => output.Color, previousColor);
         
-        logger.Info(sampleText);
         
-        Assert.That(consoleOutputMock.Object.Color, Is.EqualTo(previousColor));
+        _consoleLogger.Info(SampleText);
+        
+        
+        Assert.That(_consoleOutputMock.Object.Color, Is.EqualTo(previousColor));
     }
 }
