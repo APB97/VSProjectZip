@@ -37,7 +37,7 @@ public class ConsoleLoggerTests
         ConsoleLogger logger = new ConsoleLogger(consoleOutputMock.Object);
         const string sampleText = "Sample text";
         const ConsoleColor previousColor = ConsoleColor.Blue;
-        consoleOutputMock.Object.Color = previousColor;
+        consoleOutputMock.SetupProperty(output => output.Color, previousColor);
         
         logger.Info(sampleText);
         
