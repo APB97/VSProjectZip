@@ -17,4 +17,16 @@ public class ConsoleLoggerTests
         
         consoleOutputMock.VerifySet(output => output.Color = ConsoleColor.White, Times.AtLeastOnce);
     }
+
+    [Test]
+    public void ConsoleLogger_Info_CallsWriteLineWithItsArgument()
+    {
+        Mock<IConsoleOutput> consoleOutputMock = new Mock<IConsoleOutput>();
+        ConsoleLogger logger = new ConsoleLogger(consoleOutputMock.Object);
+        const string sampleText = "Sample text";
+
+        logger.Info(sampleText);
+        
+        consoleOutputMock.Verify(output => output.WriteLine(sampleText));
+    }
 }
