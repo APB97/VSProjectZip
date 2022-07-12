@@ -29,4 +29,18 @@ public class ConsoleLoggerTests
         
         consoleOutputMock.Verify(output => output.WriteLine(sampleText));
     }
+
+    [Test]
+    public void ConsoleLogger_Info_RestoresPreviousColorAfterwards()
+    {
+        Mock<IConsoleOutput> consoleOutputMock = new Mock<IConsoleOutput>();
+        ConsoleLogger logger = new ConsoleLogger(consoleOutputMock.Object);
+        const string sampleText = "Sample text";
+        const ConsoleColor previousColor = ConsoleColor.Blue;
+        consoleOutputMock.Object.Color = previousColor;
+        
+        logger.Info(sampleText);
+        
+        Assert.That(consoleOutputMock.Object.Color, Is.EqualTo(previousColor));
+    }
 }
