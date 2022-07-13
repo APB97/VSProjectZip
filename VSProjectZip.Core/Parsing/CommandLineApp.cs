@@ -54,14 +54,14 @@ public class CommandLineApp
             : directoryToZip?.Parent?.FullName;
     }
 
-    public void UpdateSkippedFiles(SkipNamesCopyUtility copier, IReadOnlyDictionary<string, string?> argumentValues)
+    public void UpdateSkippedFiles(ISkipFiles copier, IReadOnlyDictionary<string, string?> argumentValues)
     {
         ClearSkippedFilesIfOverrideRequested(copier, argumentValues);
         var skipTheseFiles = DetermineSkippedFiles(argumentValues);
         copier.AddFiles(skipTheseFiles);
     }
 
-    private static void ClearSkippedFilesIfOverrideRequested(SkipNamesCopyUtility copier,
+    private static void ClearSkippedFilesIfOverrideRequested(ISkipFiles copier,
         IReadOnlyDictionary<string, string?> argumentValues)
     {
         bool overrideSkippedFiles = argumentValues.TryGetValue("--override-skipfiles", out _);
@@ -80,15 +80,15 @@ public class CommandLineApp
         return skipTheseFiles;
     }
 
-    public void UpdateSkippedDirectories(SkipNamesCopyUtility copier, IReadOnlyDictionary<string, string?> argumentValues)
+    public void UpdateSkippedDirectories(ISkipDirectories copier, IReadOnlyDictionary<string, string?> argumentValues)
     {
-        ClearSkippedDDirectoriesIfOverrideRequested(argumentValues, copier);
+        ClearSkippedDDirectoriesIfOverrideRequested(copier, argumentValues);
         var skipTheseDirectories = DetermineSkippedDirectories(argumentValues);
         copier.AddDirectories(skipTheseDirectories);
     }
 
-    private static void ClearSkippedDDirectoriesIfOverrideRequested(IReadOnlyDictionary<string, string?> argumentValues,
-        SkipNamesCopyUtility copier)
+    private static void ClearSkippedDDirectoriesIfOverrideRequested(ISkipDirectories copier,
+        IReadOnlyDictionary<string, string?> argumentValues)
     {
         bool overrideSkippedDirectories = argumentValues.TryGetValue("--override-skipdirs", out _);
         if (!overrideSkippedDirectories) return;
