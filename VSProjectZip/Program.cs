@@ -1,5 +1,6 @@
 ﻿using VSProjectZip;
 using VSProjectZip.Core.FileManagement;
+using VSProjectZip.Core.Parsing;
 using VSProjectZip.Core.Utilities;
 using VSProjectZip.Core.Zipping;
 

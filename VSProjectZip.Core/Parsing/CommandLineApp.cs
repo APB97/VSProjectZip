@@ -1,7 +1,6 @@
-﻿using VSProjectZip.Core.Parsing;
-using VSProjectZip.Core.Utilities;
+﻿using VSProjectZip.Core.Utilities;
 
-namespace VSProjectZip;
+namespace VSProjectZip.Core.Parsing;
 
 public class CommandLineApp
 {
