@@ -1,5 +1,4 @@
-﻿using VSProjectZip;
-using VSProjectZip.Core.FileManagement;
+﻿using VSProjectZip.Core.FileManagement;
 using VSProjectZip.Core.Logging;
 using VSProjectZip.Core.Parsing;
 using VSProjectZip.Core.StandardIO.Output;
@@ -8,6 +7,7 @@ using VSProjectZip.Core.Zipping;
 
 var commandLine = new CommandLineApp(new ConsoleLogger(ConsoleOutput.Instance));
 var directoryToZip = commandLine.ReadDirectoryToZipFromFirstArgument(args);
+if (directoryToZip is null) return;
 var argumentValues = commandLine.ReadAdditionalArguments(args);
 var outputPath = commandLine.DetermineOutputPath(argumentValues, directoryToZip);
 
@@ -19,7 +19,6 @@ SkipNamesCopyUtility copier = new(directoryImplementation, fileImplementation, p
 commandLine.UpdateSkippedFiles(copier, argumentValues);
 commandLine.UpdateSkippedDirectories(copier, argumentValues);
 
-if (directoryToZip is null) return;
 var rootPathName = directoryToZip.Name;
 
 string temporaryPath =

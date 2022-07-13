@@ -29,29 +29,27 @@ public class CommandLineApp
     }
     
     public string DetermineOutputPath(IReadOnlyDictionary<string, string?> argumentValues,
-        DirectoryInfo? directoryToZip)
+        DirectoryInfo directoryToZip)
     {
         string? outputDirectory = DetermineOutputDirectory(argumentValues, directoryToZip);
         if (outputDirectory is null) throw new ArgumentNullException(nameof(outputDirectory), "Output directory couldn't be determined.");
         
-        string? outputName = DetermineOutputName(argumentValues, directoryToZip);
-        if (outputName is null) throw new ArgumentNullException(nameof(outputName), "Output name couldn't be determined.");
-
+        string outputName = DetermineOutputName(argumentValues, directoryToZip);
         return Path.Combine(outputDirectory, outputName);
     }
 
-    private static string? DetermineOutputName(IReadOnlyDictionary<string, string?> argumentValues, DirectoryInfo? directoryToZip)
+    private static string DetermineOutputName(IReadOnlyDictionary<string, string?> argumentValues, DirectoryInfo directoryToZip)
     {
         return argumentValues.TryGetValue("--outname", out var outName) && outName is not null
-            ? outName
-            : directoryToZip?.Name;
+            ? $"{outName}.zip"
+            : $"{directoryToZip.Name}.zip";
     }
 
-    private static string? DetermineOutputDirectory(IReadOnlyDictionary<string, string?> argumentValues, DirectoryInfo? directoryToZip)
+    private static string? DetermineOutputDirectory(IReadOnlyDictionary<string, string?> argumentValues, DirectoryInfo directoryToZip)
     {
         return argumentValues.TryGetValue("--outdir", out var outDir) && outDir is not null
             ? outDir
-            : directoryToZip?.Parent?.FullName;
+            : directoryToZip.Parent?.FullName;
     }
 
     public void UpdateSkippedFiles(ISkipFiles copier, IReadOnlyDictionary<string, string?> argumentValues)
