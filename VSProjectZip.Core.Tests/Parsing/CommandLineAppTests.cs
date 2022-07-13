@@ -56,4 +56,17 @@ public class CommandLineAppTests
         
         skipFilesMock.Verify(files => files.ClearFiles(), Times.Once);
     }
+
+    [Test]
+    public void UpdateSkippedDirectories_CallsClearDirectories_WhenRequested()
+    {
+        var loggerMock = new Mock<ILogger>();
+        var app = new CommandLineApp(loggerMock.Object);
+        var skipDirectoriesMock = new Mock<ISkipDirectories>();
+        IReadOnlyDictionary<string,string?> dictionary = new Dictionary<string, string?> { {"--override-skipdirs", null} };
+        
+        app.UpdateSkippedDirectories(skipDirectoriesMock.Object, dictionary);
+        
+        skipDirectoriesMock.Verify(directories => directories.ClearDirectories(), Times.Once);
+    }
 }
