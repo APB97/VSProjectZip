@@ -1,10 +1,12 @@
 ﻿using VSProjectZip;
 using VSProjectZip.Core.FileManagement;
+using VSProjectZip.Core.Logging;
 using VSProjectZip.Core.Parsing;
+using VSProjectZip.Core.StandardIO.Output;
 using VSProjectZip.Core.Utilities;
 using VSProjectZip.Core.Zipping;
 
-var commandLine = new CommandLineApp();
+var commandLine = new CommandLineApp(new ConsoleLogger(ConsoleOutput.Instance));
 var directoryToZip = commandLine.ReadDirectoryToZipFromFirstArgument(args);
 var argumentValues = commandLine.ReadAdditionalArguments(args);
 var outputPath = commandLine.DetermineOutputPath(argumentValues, directoryToZip);

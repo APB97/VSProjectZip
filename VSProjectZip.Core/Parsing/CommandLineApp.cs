@@ -1,9 +1,14 @@
-﻿using VSProjectZip.Core.Utilities;
+﻿using VSProjectZip.Core.Logging;
+using VSProjectZip.Core.Utilities;
 
 namespace VSProjectZip.Core.Parsing;
 
 public class CommandLineApp
 {
+    public CommandLineApp(ILogger logger)
+    {
+    }
+
     public DirectoryInfo? ReadDirectoryToZipFromFirstArgument(string[] args)
     {
         var mainArgument = args.FirstOrDefault();
