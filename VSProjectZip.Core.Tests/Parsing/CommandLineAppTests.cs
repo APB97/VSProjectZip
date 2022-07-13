@@ -58,6 +58,19 @@ public class CommandLineAppTests
     }
 
     [Test]
+    public void UpdateSkippedFiles_DoesNotCallClearFiles_WhenNotRequested()
+    {
+        var loggerMock = new Mock<ILogger>();
+        var app = new CommandLineApp(loggerMock.Object);
+        var skipFilesMock = new Mock<ISkipFiles>();
+        IReadOnlyDictionary<string,string?> dictionary = new Dictionary<string, string?>();
+        
+        app.UpdateSkippedFiles(skipFilesMock.Object, dictionary);
+        
+        skipFilesMock.Verify(files => files.ClearFiles(), Times.Never);
+    }
+
+    [Test]
     public void UpdateSkippedDirectories_CallsClearDirectories_WhenRequested()
     {
         var loggerMock = new Mock<ILogger>();
@@ -68,5 +81,18 @@ public class CommandLineAppTests
         app.UpdateSkippedDirectories(skipDirectoriesMock.Object, dictionary);
         
         skipDirectoriesMock.Verify(directories => directories.ClearDirectories(), Times.Once);
+    }
+    
+    [Test]
+    public void UpdateSkippedDirectories_DoesNotCallClearDirectories_WhenNotRequested()
+    {
+        var loggerMock = new Mock<ILogger>();
+        var app = new CommandLineApp(loggerMock.Object);
+        var skipDirectoriesMock = new Mock<ISkipDirectories>();
+        IReadOnlyDictionary<string,string?> dictionary = new Dictionary<string, string?>();
+        
+        app.UpdateSkippedDirectories(skipDirectoriesMock.Object, dictionary);
+        
+        skipDirectoriesMock.Verify(directories => directories.ClearDirectories(), Times.Never);
     }
 }
