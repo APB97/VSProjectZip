@@ -1,6 +1,7 @@
 ﻿using Moq;
 using VSProjectZip.Core.Logging;
 using VSProjectZip.Core.Parsing;
+using VSProjectZip.Core.Utilities;
 
 namespace VSProjectZip.Core.Tests.Parsing;
 
@@ -41,5 +42,18 @@ public class CommandLineAppTests
         app.ReadDirectoryToZipFromFirstArgument(Array.Empty<string>());
         
         loggerMock.Verify(logger => logger.Info(It.IsAny<string>()));
+    }
+
+    [Test]
+    public void UpdateSkippedFiles_CallsClearFiles_WhenRequested()
+    {
+        var loggerMock = new Mock<ILogger>();
+        var app = new CommandLineApp(loggerMock.Object);
+        var skipFilesMock = new Mock<ISkipFiles>();
+        IReadOnlyDictionary<string,string?> dictionary = new Dictionary<string, string?> { {"--override-skipfiles", null} };
+
+        app.UpdateSkippedFiles(skipFilesMock.Object, dictionary);
+        
+        skipFilesMock.Verify(files => files.ClearFiles(), Times.Once);
     }
 }
