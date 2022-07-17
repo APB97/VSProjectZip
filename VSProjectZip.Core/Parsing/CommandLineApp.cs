@@ -1,5 +1,4 @@
 ﻿using VSProjectZip.Core.Logging;
-using VSProjectZip.Core.Utilities;
 
 namespace VSProjectZip.Core.Parsing;
 
@@ -50,54 +49,5 @@ public class CommandLineApp
         return argumentValues.TryGetValue("--outdir", out var outDir) && outDir is not null
             ? outDir
             : directoryToZip.Parent?.FullName;
-    }
-
-    public void UpdateSkippedFiles(ISkipFiles copier, IReadOnlyDictionary<string, string?> argumentValues)
-    {
-        ClearSkippedFilesIfOverrideRequested(copier, argumentValues);
-        var skipTheseFiles = DetermineSkippedFiles(argumentValues);
-        copier.AddFiles(skipTheseFiles);
-    }
-
-    private static void ClearSkippedFilesIfOverrideRequested(ISkipFiles copier,
-        IReadOnlyDictionary<string, string?> argumentValues)
-    {
-        bool overrideSkippedFiles = argumentValues.TryGetValue("--override-skipfiles", out _);
-        if (!overrideSkippedFiles) return;
-        
-        copier.ClearFiles();
-    }
-
-    private static IEnumerable<string> DetermineSkippedFiles(IReadOnlyDictionary<string, string?> argumentValues)
-    {
-        var skipTheseFiles =
-            argumentValues.TryGetValue("--skipfiles", out var skipFiles) && skipFiles is not null
-                ? skipFiles.ParseListArgument()
-                : Enumerable.Empty<string>();
-        
-        return skipTheseFiles;
-    }
-
-    public void UpdateSkippedDirectories(ISkipDirectories copier, IReadOnlyDictionary<string, string?> argumentValues)
-    {
-        ClearSkippedDDirectoriesIfOverrideRequested(copier, argumentValues);
-        var skipTheseDirectories = DetermineSkippedDirectories(argumentValues);
-        copier.AddDirectories(skipTheseDirectories);
-    }
-
-    private static void ClearSkippedDDirectoriesIfOverrideRequested(ISkipDirectories copier,
-        IReadOnlyDictionary<string, string?> argumentValues)
-    {
-        bool overrideSkippedDirectories = argumentValues.TryGetValue("--override-skipdirs", out _);
-        if (!overrideSkippedDirectories) return;
-        
-        copier.ClearDirectories();
-    }
-
-    private static IEnumerable<string> DetermineSkippedDirectories(IReadOnlyDictionary<string, string?> argumentValues)
-    {
-        return argumentValues.TryGetValue("--skipdirs", out var skipDirs) && skipDirs is not null
-            ? skipDirs.ParseListArgument()
-            : Enumerable.Empty<string>();
     }
 }

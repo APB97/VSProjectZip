@@ -2,7 +2,7 @@
 
 namespace VSProjectZip.Core.Utilities
 {
-    public class SkipNamesCopyUtility : CopyUtility, ISkipFiles, ISkipDirectories
+    public class SkipNamesCopyUtility : CopyUtility, ISkipItems
     {
         public static readonly IReadOnlySet<string> DefaultDirectories = new HashSet<string>() { "bin", "obj", ".vs", ".git" };
         public static readonly IReadOnlySet<string> DefaultFiles = new HashSet<string>() { ".gitattributes", ".gitignore" };
