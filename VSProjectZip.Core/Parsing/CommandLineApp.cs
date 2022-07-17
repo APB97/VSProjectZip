@@ -1,53 +1,38 @@
-﻿using VSProjectZip.Core.Logging;
-
-namespace VSProjectZip.Core.Parsing;
+﻿namespace VSProjectZip.Core.Parsing;
 
 public class CommandLineApp
 {
-    private readonly ILogger _logger;
+    private readonly DirectoryInfo _directoryToZip;
+    private readonly IArgumentHolder _arguments;
 
-    public CommandLineApp(ILogger logger)
+    public CommandLineApp(DirectoryInfo directoryToZip, IArgumentHolder arguments)
     {
-        _logger = logger;
-    }
-
-    public DirectoryInfo? ReadDirectoryToZipFromFirstArgument(string[] args)
-    {
-        var mainArgument = args.FirstOrDefault();
-        if (mainArgument is not null) return new DirectoryInfo(mainArgument);
-    
-        _logger.Info(
-            "No arguments given. See how to use the app at https://github.com/APB97/VSProjectZip/blob/main/README.md#how-to-use");
-        return null;
+        _directoryToZip = directoryToZip;
+        _arguments = arguments;
     }
     
-    public IReadOnlyDictionary<string, string?> ReadAdditionalArguments(string[] args)
+    public string DetermineOutputPath()
     {
-        ArgumentParser parser = new ArgumentParser(args.Skip(1));
-        return parser.AdditionalArguments;
-    }
-    
-    public string DetermineOutputPath(IReadOnlyDictionary<string, string?> argumentValues,
-        DirectoryInfo directoryToZip)
-    {
-        string? outputDirectory = DetermineOutputDirectory(argumentValues, directoryToZip);
+        string? outputDirectory = DetermineOutputDirectory();
         if (outputDirectory is null) throw new ArgumentNullException(nameof(outputDirectory), "Output directory couldn't be determined.");
         
-        string outputName = DetermineOutputName(argumentValues, directoryToZip);
+        string outputName = DetermineOutputName();
         return Path.Combine(outputDirectory, outputName);
     }
 
-    private static string DetermineOutputName(IReadOnlyDictionary<string, string?> argumentValues, DirectoryInfo directoryToZip)
+    private string DetermineOutputName()
     {
+        var argumentValues = _arguments.AdditionalArguments;
         return argumentValues.TryGetValue("--outname", out var outName) && outName is not null
             ? $"{outName}.zip"
-            : $"{directoryToZip.Name}.zip";
+            : $"{_directoryToZip.Name}.zip";
     }
 
-    private static string? DetermineOutputDirectory(IReadOnlyDictionary<string, string?> argumentValues, DirectoryInfo directoryToZip)
+    private string? DetermineOutputDirectory()
     {
+        var argumentValues = _arguments.AdditionalArguments;
         return argumentValues.TryGetValue("--outdir", out var outDir) && outDir is not null
             ? outDir
-            : directoryToZip.Parent?.FullName;
+            : _directoryToZip.Parent?.FullName;
     }
 }

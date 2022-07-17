@@ -6,15 +6,14 @@ using VSProjectZip.Core.Utilities;
 using VSProjectZip.Core.Zipping;
 
 ILogger logger = new ConsoleLogger(ConsoleOutput.Instance);
-var commandLine = new CommandLineApp(logger);
-var directoryToZip = commandLine.ReadDirectoryToZipFromFirstArgument(args);
-if (directoryToZip is null) return;
-var argumentValues = commandLine.ReadAdditionalArguments(args);
+DirectoryInfo directoryToZip = new DirectoryInfo(args.First());
+IArgumentHolder arguments = new ArgumentParser(args.Skip(1));
+var commandLine = new CommandLineApp(directoryToZip, arguments);
 
 string outputPath;
 try
 {
-    outputPath = commandLine.DetermineOutputPath(argumentValues, directoryToZip);
+    outputPath = commandLine.DetermineOutputPath();
 }
 catch (Exception e)
 {
@@ -28,8 +27,8 @@ IFile fileImplementation = new FileImplementation();
 SkipNamesCopyUtility copier = new(directoryImplementation, fileImplementation, pathImplementation);
 SkippedItemsUpdater skippedItems = new SkippedItemsUpdater(copier);
 
-skippedItems.UpdateSkippedFiles(argumentValues);
-skippedItems.UpdateSkippedDirectories(argumentValues);
+skippedItems.UpdateSkippedFiles(arguments.AdditionalArguments);
+skippedItems.UpdateSkippedDirectories(arguments.AdditionalArguments);
 
 var rootPathName = directoryToZip.Name;
 

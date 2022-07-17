@@ -1,6 +1,6 @@
 ﻿namespace VSProjectZip.Core.Parsing
 {
-    public class ArgumentParser
+    public class ArgumentParser : IArgumentHolder
     {
         private const StringSplitOptions RemoveEmptyEntriesAndTrim = StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries;
 

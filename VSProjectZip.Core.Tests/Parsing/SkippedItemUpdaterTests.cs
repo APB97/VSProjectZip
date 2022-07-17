@@ -7,7 +7,6 @@ namespace VSProjectZip.Core.Tests.Parsing;
 [TestFixture]
 public class SkippedItemUpdaterTests
 {
-    
     [Test]
     public void UpdateSkippedFiles_CallsClearFiles_WhenRequested()
     {
