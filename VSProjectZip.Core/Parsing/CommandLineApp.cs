@@ -23,7 +23,7 @@ public class CommandLineApp
     private string DetermineOutputName()
     {
         var argumentValues = _arguments.AdditionalArguments;
-        return argumentValues.TryGetValue("--outname", out var outName) && outName is not null
+        return argumentValues.TryGetValue(ArgumentCollection.OutputName, out var outName) && outName is not null
             ? $"{outName}.zip"
             : $"{_directoryToZip.Name}.zip";
     }
@@ -31,7 +31,7 @@ public class CommandLineApp
     private string? DetermineOutputDirectory()
     {
         var argumentValues = _arguments.AdditionalArguments;
-        return argumentValues.TryGetValue("--outdir", out var outDir) && outDir is not null
+        return argumentValues.TryGetValue(ArgumentCollection.OutputDirectory, out var outDir) && outDir is not null
             ? outDir
             : _directoryToZip.Parent?.FullName;
     }

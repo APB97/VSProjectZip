@@ -12,7 +12,7 @@ public class SkippedItemUpdaterTests
     {
         var skipItemsMock = new Mock<ISkipItems>();
         var skippedItems = new SkippedItemsUpdater(skipItemsMock.Object);
-        IReadOnlyDictionary<string,string?> dictionary = new Dictionary<string, string?> { {"--override-skipfiles", null} };
+        IReadOnlyDictionary<string,string?> dictionary = new Dictionary<string, string?> { {ArgumentCollection.OverrideSkippedFiles, null} };
 
         skippedItems.UpdateSkippedFiles(dictionary);
         
@@ -36,7 +36,7 @@ public class SkippedItemUpdaterTests
     {
         var skipItemsMock = new Mock<ISkipItems>();
         var skippedItems = new SkippedItemsUpdater(skipItemsMock.Object);
-        IReadOnlyDictionary<string,string?> dictionary = new Dictionary<string, string?> { {"--override-skipdirs", null} };
+        IReadOnlyDictionary<string,string?> dictionary = new Dictionary<string, string?> { {ArgumentCollection.OverrideSkippedDirectories, null} };
         
         skippedItems.UpdateSkippedDirectories(dictionary);
         

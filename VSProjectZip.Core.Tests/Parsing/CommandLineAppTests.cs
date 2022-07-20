@@ -15,8 +15,8 @@ public class CommandLineAppTests
         var argumentsMock = new Mock<IArgumentHolder>();
         IReadOnlyDictionary<string,string?> dictionary = new Dictionary<string, string?>
         {
-            { "--outname", Test },
-            { "--outdir", TestOutputDir}
+            { ArgumentCollection.OutputName, Test },
+            { ArgumentCollection.OutputDirectory, TestOutputDir}
         };
         argumentsMock.SetupGet(holder => holder.AdditionalArguments).Returns(dictionary);
         IArgumentHolder arguments = argumentsMock.Object;
@@ -35,7 +35,7 @@ public class CommandLineAppTests
         var argumentsMock = new Mock<IArgumentHolder>();
         IReadOnlyDictionary<string,string?> dictionary = new Dictionary<string, string?>
         {
-            { "--outname", Test }
+            { ArgumentCollection.OutputName, Test }
         };
         argumentsMock.SetupGet(holder => holder.AdditionalArguments).Returns(dictionary);
         IArgumentHolder arguments = argumentsMock.Object;

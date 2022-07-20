@@ -5,9 +5,7 @@ namespace VSProjectZip.Core.Tests.Parsing;
 [TestFixture]
 public class ArgumentParserTests
 {
-    private const string OutDir = "--outdir";
     private const string FakeDirectory = "C:/FakeDirectory";
-    private const string OutName = "--outname";
     private const string FakeOutputName = "Output.zip";
     
     [Test]
@@ -15,10 +13,10 @@ public class ArgumentParserTests
     {
         var parser = new ArgumentParser(new[]
         {
-            $"{OutDir}={FakeDirectory}"
+            $"{ArgumentCollection.OutputDirectory}={FakeDirectory}"
         });
         
-        Assert.That(parser.AdditionalArguments, Contains.Key(OutDir).WithValue(FakeDirectory));
+        Assert.That(parser.AdditionalArguments, Contains.Key(ArgumentCollection.OutputDirectory).WithValue(FakeDirectory));
     }
 
     [Test]
@@ -26,14 +24,14 @@ public class ArgumentParserTests
     {
         var parser = new ArgumentParser(new []
         {
-            $"{OutDir}={FakeDirectory}",
-            $"{OutName}={FakeOutputName}"
+            $"{ArgumentCollection.OutputDirectory}={FakeDirectory}",
+            $"{ArgumentCollection.OutputName}={FakeOutputName}"
         });
         
         Assert.That(parser.AdditionalArguments,
-            Contains.Key(OutDir)
+            Contains.Key(ArgumentCollection.OutputDirectory)
                 .WithValue(FakeDirectory)
-                .And.ContainKey(OutName)
+                .And.ContainKey(ArgumentCollection.OutputName)
                 .WithValue(FakeOutputName));
     }
 
