@@ -39,4 +39,17 @@ public class TemporaryLocationTests
         
         _directoryMock.Verify(directory => directory.Delete(TestPath, true), Times.Once);
     }
+
+    [Test]
+    public void GetTemporaryPath_CallsToPathCombineWithCorrectParameters()
+    {
+        Mock<IPath> pathMock = new Mock<IPath>();
+        const string baseDirectory = "C:/Apps/ProjectZip";
+        const string testSubdirectoryName = "TestDirectoryToZip";
+
+        _ = TemporaryLocation.GetTemporaryPath(pathMock.Object, baseDirectory, testSubdirectoryName);
+        
+        pathMock.Verify(path => path.Combine(baseDirectory, TemporaryLocation.TempLocationName, testSubdirectoryName),
+            Times.Once);
+    }
 }
