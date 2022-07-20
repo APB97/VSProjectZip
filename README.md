@@ -9,6 +9,7 @@ without `.gitignore` or `.gitattributes` files.
 * command-line arguments for adjusting the settings
 * settings include:
     * output directory
+    * output name
     * directories to skip (both as additional directories and 
       as directories replacing the default setting)
     * files to skip (both as additional files and
@@ -18,6 +19,7 @@ without `.gitignore` or `.gitattributes` files.
 
 * settings like additional directories or files to skip (Done)
 * ability to change desired location and filename for the output archive (Done)
+* Unit tests for `VSProjectZip.Core` project (Done)
 
 ## Libraries used in the project
 
