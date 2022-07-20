@@ -1,4 +1,4 @@
-﻿namespace VSProjectZip.Core.Utilities;
+﻿namespace VSProjectZip.Core.FileManagement;
 
 public interface ITemporaryLocation
 {

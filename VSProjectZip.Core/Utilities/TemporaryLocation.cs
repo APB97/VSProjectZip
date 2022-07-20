@@ -30,5 +30,10 @@ namespace VSProjectZip.Core.Utilities
                 _directory.Delete(TemporaryPath, true);
             }
         }
+
+        public static string GetTemporaryPath(IPath path, string baseDirectory, string subdirectoryName)
+        {
+            return path.Combine(baseDirectory, TempLocationName, subdirectoryName);
+        }
     }
 }
