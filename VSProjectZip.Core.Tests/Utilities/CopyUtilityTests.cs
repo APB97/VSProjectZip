@@ -20,8 +20,13 @@ public class CopyUtilityTests
         _directoryMock = new Mock<IDirectory>();
         _fileMock = new Mock<IFile>();
         _pathMock = new Mock<IPath>();
+        Mock<IFileSystem> fileSystemMock = new Mock<IFileSystem>();
+        fileSystemMock.SetupGet(system => system.Directory).Returns(_directoryMock.Object);
+        fileSystemMock.SetupGet(system => system.File).Returns(_fileMock.Object);
+        fileSystemMock.SetupGet(system => system.Path).Returns(_pathMock.Object);
+        IFileSystem fileSystem = fileSystemMock.Object;
         
-        _copier = new CopyUtility(_directoryMock.Object, _fileMock.Object, _pathMock.Object);
+        _copier = new CopyUtility(fileSystem);
     }
 
     [Test]

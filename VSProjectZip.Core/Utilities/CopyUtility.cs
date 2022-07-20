@@ -9,11 +9,11 @@ namespace VSProjectZip.Core.Utilities
         private readonly IFile _file;
         private readonly IPath _path;
 
-        public CopyUtility(IDirectory directory, IFile file, IPath path)
+        public CopyUtility(IFileSystem fileSystem)
         {
-            _directory = directory;
-            _file = file;
-            _path = path;
+            _directory = fileSystem.Directory;
+            _file = fileSystem.File;
+            _path = fileSystem.Path;
         }
         
         public void CopyDirectory(string source, string destination)

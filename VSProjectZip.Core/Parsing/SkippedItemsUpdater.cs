@@ -2,7 +2,7 @@
 
 namespace VSProjectZip.Core.Parsing;
 
-public class SkippedItemsUpdater
+public class SkippedItemsUpdater : ISkippedItemsUpdater
 {
     private readonly ISkipItems _skipItems;
 

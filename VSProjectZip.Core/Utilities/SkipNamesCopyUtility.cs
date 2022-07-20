@@ -48,7 +48,7 @@ namespace VSProjectZip.Core.Utilities
             return _skipTheseFiles.Contains(fileName);
         }
 
-        public SkipNamesCopyUtility(IDirectory directory, IFile file, IPath path) : base(directory, file, path)
+        public SkipNamesCopyUtility(IFileSystem fileSystem) : base(fileSystem)
         {
             
         }
