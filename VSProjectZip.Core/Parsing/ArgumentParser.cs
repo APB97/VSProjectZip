@@ -11,7 +11,7 @@
             AdditionalArguments = args.Select(arg => arg.Split('=', RemoveEmptyEntriesAndTrim))
                 .Where(array => array.Length > 0)
                 .ToDictionary(nameValueArray => nameValueArray.First(),
-                    nameValueArray => nameValueArray.LastOrDefault());
+                    nameValueArray => nameValueArray.Skip(1).LastOrDefault());
         }
     }
 }
