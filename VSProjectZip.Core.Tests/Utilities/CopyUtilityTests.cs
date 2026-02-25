@@ -1,4 +1,4 @@
-using Moq;
+using FakeItEasy;
 using VSProjectZip.Core.FileManagement;
 using VSProjectZip.Core.Utilities;
 
@@ -6,91 +6,87 @@ namespace VSProjectZip.Core.Tests.Utilities;
 
 public class CopyUtilityTests
 {
-    // disable warning about uninitialized field(s)
-#pragma warning disable CS8618
-    private CopyUtility _copier;
-    private Mock<IDirectory> _directoryMock;
-    private Mock<IFile> _fileMock;
-    private Mock<IPath> _pathMock;
-#pragma warning restore CS8618
+    private readonly CopyUtility _copier;
+    private readonly Fake<IDirectory> _directoryMock;
+    private readonly Fake<IFile> _fileMock;
+    private readonly Fake<IPath> _pathMock;
 
-    [SetUp]
-    public void Setup()
+    public CopyUtilityTests()
     {
-        _directoryMock = new Mock<IDirectory>();
-        _fileMock = new Mock<IFile>();
-        _pathMock = new Mock<IPath>();
-        Mock<IFileSystem> fileSystemMock = new Mock<IFileSystem>();
-        fileSystemMock.SetupGet(system => system.Directory).Returns(_directoryMock.Object);
-        fileSystemMock.SetupGet(system => system.File).Returns(_fileMock.Object);
-        fileSystemMock.SetupGet(system => system.Path).Returns(_pathMock.Object);
-        IFileSystem fileSystem = fileSystemMock.Object;
+        _directoryMock = new Fake<IDirectory>();
+        _fileMock = new Fake<IFile>();
+        _pathMock = new Fake<IPath>();
+        var fileSystemMock = new Fake<IFileSystem>();
+        fileSystemMock.CallsTo(system => system.Directory).Returns(_directoryMock.FakedObject);
+        fileSystemMock.CallsTo(system => system.File).Returns(_fileMock.FakedObject);
+        fileSystemMock.CallsTo(system => system.Path).Returns(_pathMock.FakedObject);
+        IFileSystem fileSystem = fileSystemMock.FakedObject;
         
         _copier = new CopyUtility(fileSystem);
     }
 
-    [Test]
+    [Fact]
     public void CopyDirectory_CreatesDirectory_WhenDestinationDoesntExist_ButSourceDoes()
     {
         const string fakeDirectory = "FakeDirectory";
         string source = $"C:/{fakeDirectory}";
         string destination = "C:/AnotherFakeDirectory";
-        _directoryMock.Setup(dir => dir.Exists(destination)).Returns(false);
-        _directoryMock.Setup(dir => dir.Exists(source)).Returns(true);
+        _directoryMock.CallsTo(dir => dir.Exists(destination)).Returns(false);
+        _directoryMock.CallsTo(dir => dir.Exists(source)).Returns(true);
 
-        _pathMock.Setup(path => path.GetDirectoryName(source)).Returns(fakeDirectory);
+        _pathMock.CallsTo(path => path.GetDirectoryName(source)).Returns(fakeDirectory);
 
         _copier.CopyDirectory(source, destination);
         
-        _directoryMock.Verify(dir => dir.CreateDirectory(destination));
+        _directoryMock.CallsTo(dir => dir.CreateDirectory(destination)).MustHaveHappenedOnceExactly();
     }
     
-    [Test]
+    [Fact]
     public void CopyDirectory_DoesntCreateDirectory_WhenDestinationAndSourceExist()
     {
         string source = "C:/FakeDirectory";
         string destination = "C:/AnotherFakeDirectory";
-        _directoryMock.Setup(dir => dir.Exists(destination)).Returns(true);
-        _directoryMock.Setup(dir => dir.Exists(source)).Returns(true);
+        _directoryMock.CallsTo(dir => dir.Exists(destination)).Returns(true);
+        _directoryMock.CallsTo(dir => dir.Exists(source)).Returns(true);
 
         _copier.CopyDirectory(source, destination);
         
-        _directoryMock.Verify(dir => dir.CreateDirectory(destination), Times.Never);
+        _directoryMock.CallsTo(dir => dir.CreateDirectory(destination)).MustNotHaveHappened();
     }
 
-    [Test]
+    [Fact]
     public void CopyDirectory_CopiesFileAtDirectoryRoot()
     {
         const string fakeDirectory = "FakeDirectory";
         string source = $"C:/{fakeDirectory}";
         string destination = "C:/AnotherFakeDirectory";
-        _directoryMock.Setup(dir => dir.Exists(destination)).Returns(true);
-        _directoryMock.Setup(dir => dir.Exists(source)).Returns(true);
+        _directoryMock.CallsTo(dir => dir.Exists(destination)).Returns(true);
+        _directoryMock.CallsTo(dir => dir.Exists(source)).Returns(true);
         
         string fileName = "fakeFile.txt";
         string fullFilePath = $"{source}/{fileName}";
         string destinationFileName = $"{destination}/{fileName}";
-        _directoryMock.Setup(directory => directory.GetFiles(source)).Returns(new[] { fullFilePath });
+        _directoryMock.CallsTo(directory => directory.GetFiles(source)).Returns([fullFilePath]);
 
-        _pathMock.Setup(path => path.GetFileName(fullFilePath)).Returns(fileName);
-        _pathMock.Setup(path => path.GetRelativePath(source, fullFilePath)).Returns(fileName);
-        _pathMock.Setup(path => path.GetDirectoryName(destinationFileName)).Returns(destination);
-        _pathMock.Setup(path => path.GetDirectoryName(source)).Returns(fakeDirectory);
-        _pathMock.Setup(path => path.Combine(destination, fileName)).Returns(destinationFileName);
+        _pathMock.CallsTo(path => path.GetFileName(fullFilePath)).Returns(fileName);
+        _pathMock.CallsTo(path => path.GetRelativePath(source, fullFilePath)).Returns(fileName);
+        _pathMock.CallsTo(path => path.GetDirectoryName(destinationFileName)).Returns(destination);
+        _pathMock.CallsTo(path => path.GetDirectoryName(source)).Returns(fakeDirectory);
+        _pathMock.CallsTo(path => path.Combine(destination, fileName)).Returns(destinationFileName);
         
         _copier.CopyDirectory(source, destination);
         
-        _fileMock.Verify(file => file.Copy(fullFilePath, destinationFileName, true), Times.Once);
+        _fileMock.CallsTo(file => file.Copy(fullFilePath, destinationFileName, true)).MustHaveHappenedOnceExactly();
     }
     
-    [Test]
+    [Fact]
     public void CopyDirectory_CopiesFileAtSubdirectory()
     {
         const string fakeDirectory = "FakeDirectory";
         string source = $"C:/{fakeDirectory}";
         string destination = "C:/AnotherFakeDirectory";
-        _directoryMock.Setup(dir => dir.Exists(destination)).Returns(true);
-        _directoryMock.Setup(dir => dir.Exists(source)).Returns(true);
+        _directoryMock.CallsTo(dir => dir.Exists(destination)).Returns(true);
+        _directoryMock.CallsTo(dir => dir.Exists(source)).Returns(true);
 
         string directoryName = "fakeSubDirectory";
         string fileName = "fakeFile.txt";
@@ -98,19 +94,19 @@ public class CopyUtilityTests
         string fullFilePath = $"{source}/{relativePath}";
         string destinationFileName = $"{destination}/{relativePath}";
         string subdirectoryFullPath = $"{source}/{directoryName}";
-        _directoryMock.Setup(directory => directory.GetFiles(source)).Returns(Array.Empty<string>());
-        _directoryMock.Setup(directory => directory.GetDirectories(source)).Returns(new[] { subdirectoryFullPath });
-        _directoryMock.Setup(directory => directory.GetFiles(subdirectoryFullPath)).Returns(new[] { fullFilePath });
+        _directoryMock.CallsTo(directory => directory.GetFiles(source)).Returns([]);
+        _directoryMock.CallsTo(directory => directory.GetDirectories(source)).Returns([subdirectoryFullPath]);
+        _directoryMock.CallsTo(directory => directory.GetFiles(subdirectoryFullPath)).Returns([fullFilePath]);
         
-        _pathMock.Setup(path => path.GetFileName(fullFilePath)).Returns(fileName);
-        _pathMock.Setup(path => path.GetRelativePath(source, fullFilePath)).Returns(relativePath);
-        _pathMock.Setup(path => path.GetDirectoryName(destinationFileName)).Returns(directoryName);
-        _pathMock.Setup(path => path.GetDirectoryName(source)).Returns(fakeDirectory);
-        _pathMock.Setup(path => path.GetDirectoryName(subdirectoryFullPath)).Returns(directoryName);
-        _pathMock.Setup(path => path.Combine(destination, relativePath)).Returns(destinationFileName);
+        _pathMock.CallsTo(path => path.GetFileName(fullFilePath)).Returns(fileName);
+        _pathMock.CallsTo(path => path.GetRelativePath(source, fullFilePath)).Returns(relativePath);
+        _pathMock.CallsTo(path => path.GetDirectoryName(destinationFileName)).Returns(directoryName);
+        _pathMock.CallsTo(path => path.GetDirectoryName(source)).Returns(fakeDirectory);
+        _pathMock.CallsTo(path => path.GetDirectoryName(subdirectoryFullPath)).Returns(directoryName);
+        _pathMock.CallsTo(path => path.Combine(destination, relativePath)).Returns(destinationFileName);
         
         _copier.CopyDirectory(source, destination);
         
-        _fileMock.Verify(file => file.Copy(fullFilePath, destinationFileName, true), Times.Once);
+        _fileMock.CallsTo(file => file.Copy(fullFilePath, destinationFileName, true)).MustHaveHappenedOnceExactly();
     }
 }

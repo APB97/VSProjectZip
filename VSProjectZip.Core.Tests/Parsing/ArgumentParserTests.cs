@@ -2,37 +2,32 @@
 
 namespace VSProjectZip.Core.Tests.Parsing;
 
-[TestFixture]
 public class ArgumentParserTests
 {
     private const string FakeDirectory = "C:/FakeDirectory";
     private const string FakeOutputName = "Output.zip";
     
-    [Test]
+    [Fact]
     public void WhenOneSimpleArgumentPassed_AdditionalArgumentsContainsGivenKeyAndValue()
     {
-        var parser = new ArgumentParser(new[]
-        {
+        var parser = new ArgumentParser(
+        [
             $"{ArgumentCollection.OutputDirectory}={FakeDirectory}"
-        });
-        
-        Assert.That(parser.AdditionalArguments, Contains.Key(ArgumentCollection.OutputDirectory).WithValue(FakeDirectory));
+        ]);
+
+        Assert.Contains(new KeyValuePair<string, string?>(ArgumentCollection.OutputDirectory, FakeDirectory), parser.AdditionalArguments);
     }
 
-    [Test]
+    [Fact]
     public void WhenTwoArgumentsPassed_AdditionalArgumentsContainsGivenKeysAndValues()
     {
-        var parser = new ArgumentParser(new []
-        {
+        var parser = new ArgumentParser(
+        [
             $"{ArgumentCollection.OutputDirectory}={FakeDirectory}",
             $"{ArgumentCollection.OutputName}={FakeOutputName}"
-        });
+        ]);
         
-        Assert.That(parser.AdditionalArguments,
-            Contains.Key(ArgumentCollection.OutputDirectory)
-                .WithValue(FakeDirectory)
-                .And.ContainKey(ArgumentCollection.OutputName)
-                .WithValue(FakeOutputName));
+        Assert.Contains(new KeyValuePair<string, string?>(ArgumentCollection.OutputDirectory, FakeDirectory), parser.AdditionalArguments);
+        Assert.Contains(new KeyValuePair<string, string?>(ArgumentCollection.OutputName, FakeOutputName), parser.AdditionalArguments);
     }
-
 }

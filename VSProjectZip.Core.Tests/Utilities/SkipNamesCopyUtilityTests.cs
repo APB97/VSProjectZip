@@ -1,64 +1,59 @@
-﻿using Moq;
+﻿using FakeItEasy;
 using VSProjectZip.Core.FileManagement;
 using VSProjectZip.Core.Utilities;
 
 namespace VSProjectZip.Core.Tests.Utilities;
 
-[TestFixture]
 public class SkipNamesCopyUtilityTests
 {
-    // disable warning about uninitialized field(s)
-#pragma warning disable CS8618
-    private Mock<IDirectory> _directoryMock;
-    private Mock<IFile> _fileMock;
-    private Mock<IPath> _pathMock;
-    private SkipNamesCopyUtility _skipNamesCopyUtility;
-#pragma warning restore CS8618
+    private readonly Fake<IDirectory> _directoryMock;
+    private readonly Fake<IFile> _fileMock;
+    private readonly Fake<IPath> _pathMock;
+    private readonly SkipNamesCopyUtility _skipNamesCopyUtility;
 
-    [SetUp]
-    public void Setup()
+    public SkipNamesCopyUtilityTests()
     {
-        _directoryMock = new Mock<IDirectory>();
-        _fileMock = new Mock<IFile>();
-        _pathMock = new Mock<IPath>();
-        Mock<IFileSystem> fileSystemMock = new Mock<IFileSystem>();
-        fileSystemMock.SetupGet(system => system.Directory).Returns(_directoryMock.Object);
-        fileSystemMock.SetupGet(system => system.File).Returns(_fileMock.Object);
-        fileSystemMock.SetupGet(system => system.Path).Returns(_pathMock.Object);
-        IFileSystem fileSystem = fileSystemMock.Object;
+        _directoryMock = new Fake<IDirectory>();
+        _fileMock = new Fake<IFile>();
+        _pathMock = new Fake<IPath>();
+        var fileSystemMock = new Fake<IFileSystem>();
+        fileSystemMock.CallsTo(system => system.Directory).Returns(_directoryMock.FakedObject);
+        fileSystemMock.CallsTo(system => system.File).Returns(_fileMock.FakedObject);
+        fileSystemMock.CallsTo(system => system.Path).Returns(_pathMock.FakedObject);
+        IFileSystem fileSystem = fileSystemMock.FakedObject;
 
         _skipNamesCopyUtility = new SkipNamesCopyUtility(fileSystem);
     }
 
-    [Test]
+    [Fact]
     public void AfterCreation_SkipTheseFilesIsNotEmpty()
     {
-        Assert.That(_skipNamesCopyUtility.SkipTheseFiles, Is.Not.Empty);
+        Assert.NotEmpty(_skipNamesCopyUtility.SkipTheseFiles);
     }
     
-    [Test]
+    [Fact]
     public void ClearFiles_EmptiesSkipTheseFilesSet()
     {
         _skipNamesCopyUtility.ClearFiles();
         
-        Assert.That(_skipNamesCopyUtility.SkipTheseFiles, Is.Empty);
+        Assert.Empty(_skipNamesCopyUtility.SkipTheseFiles);
     }
     
-    [Test]
+    [Fact]
     public void AfterCreation_SkipTheseDirectoriesIsNotEmpty()
     {
-        Assert.That(_skipNamesCopyUtility.SkipTheseDirectories, Is.Not.Empty);
+        Assert.NotEmpty(_skipNamesCopyUtility.SkipTheseDirectories);
     }
     
-    [Test]
+    [Fact]
     public void ClearFiles_EmptiesSkipTheseDirectoriesSet()
     {
         _skipNamesCopyUtility.ClearDirectories();
         
-        Assert.That(_skipNamesCopyUtility.SkipTheseDirectories, Is.Empty);
+        Assert.Empty(_skipNamesCopyUtility.SkipTheseDirectories);
     }
 
-    [Test]
+    [Fact]
     public void AddFiles_AddsFilesToSkippedFilesSet()
     {
         string file1 = "skipThisOne";
@@ -66,11 +61,12 @@ public class SkipNamesCopyUtilityTests
         var files = new[] { file1, file2 };
 
         _skipNamesCopyUtility.AddFiles(files);
-        
-        Assert.That(_skipNamesCopyUtility.SkipTheseFiles, Contains.Item(file1).And.Contains(file2));
+
+        Assert.Contains(file1, _skipNamesCopyUtility.SkipTheseFiles);
+        Assert.Contains(file2, _skipNamesCopyUtility.SkipTheseFiles);
     }
 
-    [Test]
+    [Fact]
     public void AddDirectories_AddsDirectoriesToSkippedDirectoriesSet()
     {
         string directory1 = "skipThisDirectory";
@@ -79,45 +75,46 @@ public class SkipNamesCopyUtilityTests
         
         _skipNamesCopyUtility.AddDirectories(directories);
         
-        Assert.That(_skipNamesCopyUtility.SkipTheseDirectories, Contains.Item(directory1).And.Contains(directory2));
+        Assert.Contains(directory1, _skipNamesCopyUtility.SkipTheseDirectories);
+        Assert.Contains(directory2, _skipNamesCopyUtility.SkipTheseDirectories);
     }
 
-    [Test]
+    [Fact]
     public void CopyDirectory_SkipsFileWhenItsNameIsInSkippedFilesSet()
     {
         string fakeDirectory = "FakeDirectory";
         string source = $"C:/{fakeDirectory}";
         string destination = "C:/AnotherFakeDirectory";
-        _directoryMock.Setup(dir => dir.Exists(destination)).Returns(true);
-        _directoryMock.Setup(dir => dir.Exists(source)).Returns(true);
+        _directoryMock.CallsTo(dir => dir.Exists(destination)).Returns(true);
+        _directoryMock.CallsTo(dir => dir.Exists(source)).Returns(true);
         
         string fileName = "fakeFile.txt";
         string fullFilePath = $"{source}/{fileName}";
         string destinationFileName = $"{destination}/{fileName}";
-        _directoryMock.Setup(directory => directory.GetFiles(source)).Returns(new[] { fullFilePath });
+        _directoryMock.CallsTo(directory => directory.GetFiles(source)).Returns([fullFilePath]);
         
-        _pathMock.Setup(path => path.GetFileName(fullFilePath)).Returns(fileName);
-        _pathMock.Setup(path => path.GetRelativePath(source, fullFilePath)).Returns(fileName);
-        _pathMock.Setup(path => path.GetDirectoryName(destinationFileName)).Returns(destination);
-        _pathMock.Setup(path => path.GetDirectoryName(source)).Returns(fakeDirectory);
-        _pathMock.Setup(path => path.Combine(destination, fileName)).Returns(destinationFileName);
+        _pathMock.CallsTo(path => path.GetFileName(fullFilePath)).Returns(fileName);
+        _pathMock.CallsTo(path => path.GetRelativePath(source, fullFilePath)).Returns(fileName);
+        _pathMock.CallsTo(path => path.GetDirectoryName(destinationFileName)).Returns(destination);
+        _pathMock.CallsTo(path => path.GetDirectoryName(source)).Returns(fakeDirectory);
+        _pathMock.CallsTo(path => path.Combine(destination, fileName)).Returns(destinationFileName);
         
         _skipNamesCopyUtility.ClearFiles();
-        _skipNamesCopyUtility.AddFiles(new []{ fileName });
+        _skipNamesCopyUtility.AddFiles([fileName]);
         
         _skipNamesCopyUtility.CopyDirectory(source, destination);
         
-        _fileMock.Verify(file => file.Copy(fullFilePath, destinationFileName, true), Times.Never);
+        _fileMock.CallsTo(file => file.Copy(fullFilePath, destinationFileName, true)).MustNotHaveHappened();
     }
 
-    [Test]
+    [Fact]
     public void CopyDirectory_SkipsFileInSkippedDirectory()
     {
         string fakeDirectory = "FakeDirectory";
         string source = $"C:/{fakeDirectory}";
         string destination = "C:/AnotherFakeDirectory";
-        _directoryMock.Setup(dir => dir.Exists(destination)).Returns(true);
-        _directoryMock.Setup(dir => dir.Exists(source)).Returns(true);
+        _directoryMock.CallsTo(dir => dir.Exists(destination)).Returns(true);
+        _directoryMock.CallsTo(dir => dir.Exists(source)).Returns(true);
 
         string directoryName = "fakeSubDirectory";
         string fileName = "fakeFile.txt";
@@ -125,21 +122,15 @@ public class SkipNamesCopyUtilityTests
         string fullFilePath = $"{source}/{relativePath}";
         string destinationFileName = $"{destination}/{relativePath}";
         string subdirectoryFullPath = $"{source}/{directoryName}";
-        _directoryMock.Setup(directory => directory.GetFiles(source)).Returns(Array.Empty<string>());
-        _directoryMock.Setup(directory => directory.GetDirectories(source)).Returns(new[] { subdirectoryFullPath });
-        _directoryMock.Setup(directory => directory.GetFiles(subdirectoryFullPath)).Returns(new[] { fullFilePath });
-        
-        _pathMock.Setup(path => path.GetFileName(fullFilePath)).Returns(fileName);
-        _pathMock.Setup(path => path.GetRelativePath(source, fullFilePath)).Returns(relativePath);
-        _pathMock.Setup(path => path.GetDirectoryName(destinationFileName)).Returns(directoryName);
-        _pathMock.Setup(path => path.GetDirectoryName(source)).Returns(fakeDirectory);
-        _pathMock.Setup(path => path.Combine(destination, relativePath)).Returns(destinationFileName);
-        
+        _directoryMock.CallsTo(directory => directory.GetFiles(source)).Returns([]);
+        _directoryMock.CallsTo(directory => directory.GetDirectories(source)).Returns([subdirectoryFullPath]);
+        _directoryMock.CallsTo(directory => directory.GetFiles(subdirectoryFullPath)).Returns([fullFilePath]);
+
         _skipNamesCopyUtility.ClearDirectories();
-        _skipNamesCopyUtility.AddDirectories(new[] { directoryName });
+        _skipNamesCopyUtility.AddDirectories([directoryName]);
         
         _skipNamesCopyUtility.CopyDirectory(source, destination);
         
-        _fileMock.Verify(file => file.Copy(fullFilePath, destinationFileName, true), Times.Never);
+        _fileMock.CallsTo(file => file.Copy(fullFilePath, destinationFileName, true)).MustNotHaveHappened();
     }
 }

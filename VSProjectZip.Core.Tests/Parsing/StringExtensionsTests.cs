@@ -2,29 +2,29 @@
 
 namespace VSProjectZip.Core.Tests.Parsing;
 
-[TestFixture]
 public class StringExtensionsTests
 {
-    [TestCase("")]
-    [TestCase(" ")]
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
     public void ParseListArgument_ReturnsEmptySet_WhenNoItemsAreGiven(string emptyArgumentValue)
     {
         var hashSet = emptyArgumentValue.ParseListArgument();
         
-        Assert.That(hashSet, Is.Empty);
+        Assert.Empty(hashSet);
     }
 
-    [Test]
+    [Fact]
     public void ParseListArgument_ReturnsSetWithGivenItem_WhenOneItemIsGiven()
     {
         string sampleValue = "sampleValue";
         
         var hashSet = sampleValue.ParseListArgument();
         
-        Assert.That(hashSet, Contains.Item(sampleValue));
+        Assert.Contains(sampleValue, hashSet);
     }
 
-    [Test]
+    [Fact]
     public void ParseListArgument_ReturnsSetWithGivenItems_WhenTwoItemsAreGivenWithWhitespaces()
     {
         string sampleValue = "sampleValue";
@@ -32,11 +32,12 @@ public class StringExtensionsTests
         string listArgumentValue = $"{sampleValue} | {anotherValue}";
 
         var hashSet = listArgumentValue.ParseListArgument();
-        
-        Assert.That(hashSet, Contains.Item(sampleValue).And.Contains(anotherValue));
+
+        Assert.Contains(sampleValue, hashSet);
+        Assert.Contains(anotherValue, hashSet);
     }
     
-    [Test]
+    [Fact]
     public void ParseListArgument_ReturnsSetWithGivenItems_WhenTwoItemsAreGivenWithNoWhitespaces()
     {
         string sampleValue = "sampleValue";
@@ -44,8 +45,8 @@ public class StringExtensionsTests
         string listArgumentValue = $"{sampleValue}|{anotherValue}";
 
         var hashSet = listArgumentValue.ParseListArgument();
-        
-        Assert.That(hashSet, Contains.Item(sampleValue).And.Contains(anotherValue));
+
+        Assert.Contains(sampleValue, hashSet);
+        Assert.Contains(anotherValue, hashSet);
     }
-    
 }

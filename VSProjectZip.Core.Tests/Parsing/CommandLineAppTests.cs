@@ -1,46 +1,45 @@
-﻿using Moq;
+﻿using FakeItEasy;
 using VSProjectZip.Core.Parsing;
 
 namespace VSProjectZip.Core.Tests.Parsing;
 
-[TestFixture]
 public class CommandLineAppTests
 {
-    [Test]
+    [Fact]
     public void DetermineOutputPath_ReturnsProperPath_WhenArgumentsSpecifyDirectoryAndName()
     {
         const string TestOutputDir = "C:/testOut";
         const string Test = "test";
         const string DirectoryToZip = "C:/test";
-        var argumentsMock = new Mock<IArgumentHolder>();
+        var argumentsMock = new Fake<IArgumentHolder>();
         IReadOnlyDictionary<string,string?> dictionary = new Dictionary<string, string?>
         {
             { ArgumentCollection.OutputName, Test },
             { ArgumentCollection.OutputDirectory, TestOutputDir}
         };
-        argumentsMock.SetupGet(holder => holder.AdditionalArguments).Returns(dictionary);
-        IArgumentHolder arguments = argumentsMock.Object;
+        argumentsMock.CallsTo(holder => holder.AdditionalArguments).Returns(dictionary);
+        IArgumentHolder arguments = argumentsMock.FakedObject;
         var app = new CommandLineApp(new DirectoryInfo(DirectoryToZip), arguments);
 
         var actual = app.DetermineOutputPath();
         
-        Assert.That(actual, Is.EqualTo($"{TestOutputDir}{Path.DirectorySeparatorChar}{Test}.zip"));
+        Assert.Equal($"{TestOutputDir}{Path.DirectorySeparatorChar}{Test}.zip", actual);
     }
 
-    [Test]
+    [Fact]
     public void DetermineOutputPath_ThrowsException_WhenZippingRootDirectory()
     {
         const string Test = "test";
         const string DirectoryToZip = "C:/";
-        var argumentsMock = new Mock<IArgumentHolder>();
+        var argumentsMock = new Fake<IArgumentHolder>();
         IReadOnlyDictionary<string,string?> dictionary = new Dictionary<string, string?>
         {
             { ArgumentCollection.OutputName, Test }
         };
-        argumentsMock.SetupGet(holder => holder.AdditionalArguments).Returns(dictionary);
-        IArgumentHolder arguments = argumentsMock.Object;
+        argumentsMock.CallsTo(holder => holder.AdditionalArguments).Returns(dictionary);
+        IArgumentHolder arguments = argumentsMock.FakedObject;
         var app = new CommandLineApp(new DirectoryInfo(DirectoryToZip), arguments);
 
-        Assert.Catch<Exception>(() => app.DetermineOutputPath());
+        Assert.ThrowsAny<Exception>(app.DetermineOutputPath);
     }
 }
