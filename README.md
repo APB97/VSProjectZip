@@ -23,8 +23,8 @@ without `.gitignore` or `.gitattributes` files.
 
 ## Libraries used in the project
 
-- Moq (Mocking library)
-- NUnit (Unit testing library)
+- FakeItEasy (Mocking library)
+- xUnit (Unit testing library)
 
 ## How to use
 
