@@ -1,5 +1,3 @@
 ﻿namespace VSProjectZip.Core.Utilities;
 
-public interface ISkipItems : ISkipFiles, ISkipDirectories
-{
-}
+public interface ISkipItems : ISkipFiles, ISkipDirectories;

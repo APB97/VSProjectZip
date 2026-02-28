@@ -21,9 +21,4 @@ public class PathImplementation : IPath
     {
         return Path.Combine(paths);
     }
-
-    public string? GetDirectoryName(string destinationFileName)
-    {
-        return Path.GetDirectoryName(destinationFileName);
-    }
 }

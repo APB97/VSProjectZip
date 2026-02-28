@@ -2,6 +2,6 @@
 {
     public interface IDirectoryZip
     {
-        void ZipDirectory(string path, string outputZipPath);
+        Task ZipDirectoryAsync(string path, string outputZipPath);
     }
 }

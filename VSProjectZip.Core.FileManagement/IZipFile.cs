@@ -2,5 +2,5 @@
 
 public interface IZipFile
 {
-    void CreateFromDirectory(string path, string destinationFileName);
+    Task<IZipArchiveWrapper> CreateAsync(string outputPath);
 }
