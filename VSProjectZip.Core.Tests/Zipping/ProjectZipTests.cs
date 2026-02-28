@@ -1,81 +1,58 @@
-﻿using Moq;
+﻿using FakeItEasy;
+using System.IO.Compression;
 using VSProjectZip.Core.FileManagement;
 using VSProjectZip.Core.Utilities;
 using VSProjectZip.Core.Zipping;
 
 namespace VSProjectZip.Core.Tests.Zipping;
 
-[TestFixture]
 public class ProjectZipTests
 {
-#pragma warning disable CS8618
-    private ProjectZip _projectZip;
-    private Mock<IDirectoryCopier> _directoryCopierMock;
-    private Mock<ITemporaryLocation> _temporaryLocationMock;
-    private Mock<IFile> _fileMock;
-    private Mock<IZipFile> _zipFileMock;
-#pragma warning restore CS8618
+    private readonly Fake<IDirectoryEnumerator> _directoryCopierMock;
+    private readonly Fake<IFile> _fileMock;
+    private readonly Fake<IZipFile> _zipFileMock;
+    private readonly Fake<IDirectory> _directoryMock;
+    private readonly string testPath = "C:/testDirectory";
+    private readonly string destinationArchive = "C:/test/test.zip";
 
-    [SetUp]
-    public void Setup()
+    public ProjectZipTests()
     {
-        _directoryCopierMock = new Mock<IDirectoryCopier>();
-        _temporaryLocationMock = new Mock<ITemporaryLocation>();
-        _fileMock = new Mock<IFile>();
-        _zipFileMock = new Mock<IZipFile>();
-        _projectZip = new ProjectZip(_directoryCopierMock.Object, _temporaryLocationMock.Object,
-            _fileMock.Object, _zipFileMock.Object);
+        _directoryCopierMock = new Fake<IDirectoryEnumerator>();
+        _fileMock = new Fake<IFile>();
+        _zipFileMock = new Fake<IZipFile>();
+        _directoryMock = new Fake<IDirectory>();
+        var archiveMock = new Fake<IZipArchiveWrapper>();
+        archiveMock.CallsTo(a => a.CreateEntryFromFileAsync(A<string>.Ignored, A<string>.Ignored)).Returns((ZipArchiveEntry?)null);
+        _zipFileMock.CallsTo(zf => zf.CreateAsync(A<string>.Ignored)).Returns(archiveMock.FakedObject);
     }
 
-    [Test]
-    public void ZipDirectory_CallsToZipFile_s_ZipDirectory()
+    [Fact]
+    public async Task ZipDirectory_CallsToZipFile_s_ZipDirectoryAsync()
     {
-        string testPath = "C:/testDirectory";
-        string destinationArchive = "C:/test/test.zip";
-        string testTemp = "C:/testTemp";
-        _temporaryLocationMock.Setup(location => location.TemporaryPath).Returns(testTemp);
+        var projectZip = new ProjectZip(_directoryCopierMock.FakedObject, _zipFileMock.FakedObject, _fileMock.FakedObject, _directoryMock.FakedObject);
         
-        _projectZip.ZipDirectory(testPath, destinationArchive);
+        await projectZip.ZipDirectoryAsync(testPath, destinationArchive);
         
-        _zipFileMock.Verify(zipFile => zipFile.CreateFromDirectory(testTemp, destinationArchive), Times.Once);
+        _zipFileMock.CallsTo(zipFile => zipFile.CreateAsync(destinationArchive)).MustHaveHappenedOnceExactly();
     }
 
-    [Test]
-    public void ZipDirectory_CallsTemporaryLocationAndDirectoryCopier()
+    [Fact]
+    public async Task ZipDirectory_DoesNotDelete()
     {
-        string testPath = "C:/testDirectory";
-        string destinationArchive = "C:/test/test.zip";
-        string testTemp = "C:/testTemp";
-        _temporaryLocationMock.Setup(location => location.TemporaryPath).Returns(testTemp);
-        
-        _projectZip.ZipDirectory(testPath, destinationArchive);
-        
-        _temporaryLocationMock.Verify(location => location.CreateIfDoesNotExist(), Times.Once);
-        _directoryCopierMock.Verify(copier => copier.CopyDirectory(testPath, testTemp), Times.Once);
-        _temporaryLocationMock.Verify(location => location.DeleteIfExists(), Times.Once);
+        _fileMock.CallsTo(f => f.Exists(destinationArchive)).Returns(true);
+        var projectZip = new ProjectZip(_directoryCopierMock.FakedObject, _zipFileMock.FakedObject, _fileMock.FakedObject, _directoryMock.FakedObject, false);
+
+        await Assert.ThrowsAnyAsync<InvalidOperationException>(async () => await projectZip.ZipDirectoryAsync(testPath, destinationArchive));
+        _fileMock.CallsTo(f => f.Delete(destinationArchive)).MustNotHaveHappened();
     }
 
-    [Test]
-    public void ZipDirectory_DeletesPreviousArchive_IfItExists()
+    [Fact]
+    public async Task ZipDirectory_DoesDelete_WhenForceIsSet()
     {
-        string testPath = "C:/testDirectory";
-        string destinationArchive = "C:/test/test.zip";
-        _fileMock.Setup(file => file.Exists(destinationArchive)).Returns(true);
-        
-        _projectZip.ZipDirectory(testPath, destinationArchive);
-        
-        _fileMock.Verify(file => file.Delete(destinationArchive), Times.Once);
-    }
-    
-    [Test]
-    public void ZipDirectory_DoesntTryToDeletePreviousArchive_IfItDoesNotExist()
-    {
-        string testPath = "C:/testDirectory";
-        string destinationArchive = "C:/test/test.zip";
-        _fileMock.Setup(file => file.Exists(destinationArchive)).Returns(false);
-        
-        _projectZip.ZipDirectory(testPath, destinationArchive);
-        
-        _fileMock.Verify(file => file.Delete(destinationArchive), Times.Never);
+        _fileMock.CallsTo(f => f.Exists(destinationArchive)).Returns(true);
+        var projectZip = new ProjectZip(_directoryCopierMock.FakedObject, _zipFileMock.FakedObject, _fileMock.FakedObject, _directoryMock.FakedObject, true);
+
+        await projectZip.ZipDirectoryAsync(testPath, destinationArchive);
+        _fileMock.CallsTo(f => f.Delete(destinationArchive)).MustHaveHappenedOnceExactly();
     }
 }

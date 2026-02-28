@@ -3,40 +3,44 @@ using VSProjectZip.Core.Utilities;
 
 namespace VSProjectZip.Core.Zipping
 {
-    public class ProjectZip : IDirectoryZip
+    public class ProjectZip(IDirectoryEnumerator directoryCopier, IZipFile zipFile, IFile file, IDirectory directory, bool force = false) : IDirectoryZip
     {
-        private readonly IDirectoryCopier _directoryCopier;
-        private readonly ITemporaryLocation _temporaryLocation;
-        private readonly IFile _file;
-        private readonly IZipFile _zipFile;
+        private readonly IDirectoryEnumerator _directoryCopier = directoryCopier;
+        private readonly IZipFile zipFile = zipFile;
+        private readonly IFile file = file;
+        private readonly IDirectory directory = directory;
 
-        public ProjectZip(IDirectoryCopier directoryCopier, ITemporaryLocation temporaryLocation, IFile file, IZipFile zipFile)
+        public async Task ZipDirectoryAsync(string path, string outputZipPath)
         {
-            _directoryCopier = directoryCopier;
-            _temporaryLocation = temporaryLocation;
-            _file = file;
-            _zipFile = zipFile;
-        }
-
-        public void ZipDirectory(string path, string outputZipPath)
-        {
-            _temporaryLocation.CreateIfDoesNotExist();
-            ZipDirectoryUsingTemporaryLocation(path, outputZipPath);
-            _temporaryLocation.DeleteIfExists();
-        }
-
-        private void ZipDirectoryUsingTemporaryLocation(string path, string outputZipPath)
-        {
-            _directoryCopier.CopyDirectory(path, _temporaryLocation.TemporaryPath);
-            DeleteIfExist(outputZipPath);
-            _zipFile.CreateFromDirectory(_temporaryLocation.TemporaryPath, outputZipPath);
-        }
-
-        private void DeleteIfExist(string outputZipPath)
-        {
-            if (_file.Exists(outputZipPath))
+            if (file.Exists(outputZipPath))
             {
-                _file.Delete(outputZipPath);
+                if (force)
+                {
+                    file.Delete(outputZipPath);
+                }
+                else
+                {
+                    throw new InvalidOperationException("File exists and force parameter is not set");
+                }
+            }
+
+            await using var zip = await zipFile.CreateAsync(outputZipPath);
+            await TraverseAndZip(path, path, zip);
+        }
+
+        private async Task TraverseAndZip(string rootPath, string path, IZipArchiveWrapper zip)
+        {
+            foreach (var entry in _directoryCopier.FilterOutSkippedItems(_directoryCopier.EnumerateEntries(path)))
+            {
+                if (directory.Exists(entry))
+                {
+                    await TraverseAndZip(rootPath, entry, zip);
+                }
+                else
+                {
+                    string relativePath = Path.GetRelativePath(rootPath, entry);
+                    await zip.CreateEntryFromFileAsync(entry, relativePath);
+                }
             }
         }
     }

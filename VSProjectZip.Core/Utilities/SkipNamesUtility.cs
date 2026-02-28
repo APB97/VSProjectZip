@@ -2,12 +2,12 @@
 
 namespace VSProjectZip.Core.Utilities
 {
-    public class SkipNamesCopyUtility : CopyUtility, ISkipItems
+    public class SkipNamesUtility(IFileSystem fileSystem) : DirectoryEnumerator(fileSystem), ISkipItems
     {
-        public static readonly IReadOnlySet<string> DefaultDirectories = new HashSet<string>() { "bin", "obj", ".vs", ".git" };
+        public static readonly IReadOnlySet<string> DefaultDirectories = new HashSet<string>() { "bin", "obj", ".vs", ".git", "TestResults" };
         public static readonly IReadOnlySet<string> DefaultFiles = new HashSet<string>() { ".gitattributes", ".gitignore" };
-        private readonly HashSet<string> _skipTheseDirectories = new(DefaultDirectories);
-        private readonly HashSet<string> _skipTheseFiles = new(DefaultFiles);
+        private readonly HashSet<string> _skipTheseDirectories = [.. DefaultDirectories];
+        private readonly HashSet<string> _skipTheseFiles = [.. DefaultFiles];
 
         public IReadOnlySet<string> SkipTheseDirectories => _skipTheseDirectories;
         public IReadOnlySet<string> SkipTheseFiles => _skipTheseFiles;
@@ -38,19 +38,14 @@ namespace VSProjectZip.Core.Utilities
             _skipTheseDirectories.Clear();
         }
 
-        protected override bool ShouldSkipDirectory(string directoryName)
+        public override bool ShouldSkipDirectory(string directoryName)
         {
-            return _skipTheseDirectories.Contains(directoryName);
+            return _skipTheseDirectories.Contains(Path.GetFileName(directoryName));
         }
 
-        protected override bool ShouldSkipFile(string fileName)
+        public override bool ShouldSkipFile(string fileName)
         {
-            return _skipTheseFiles.Contains(fileName);
-        }
-
-        public SkipNamesCopyUtility(IFileSystem fileSystem) : base(fileSystem)
-        {
-            
+            return _skipTheseFiles.Contains(Path.GetFileName(fileName));
         }
     }
 }

@@ -1,7 +1,10 @@
 ﻿namespace VSProjectZip.Core.Utilities
 {
-    public interface IDirectoryCopier
+    public interface IDirectoryEnumerator
     {
-        void CopyDirectory(string source, string destination);
+        bool ShouldSkipDirectory(string directoryName);
+        bool ShouldSkipFile(string fileName);
+        IEnumerable<string> EnumerateEntries(string directory);
+        IEnumerable<string> FilterOutSkippedItems(IEnumerable<string> files);
     }
 }

@@ -1,11 +1,10 @@
-﻿using System.IO.Compression;
-
-namespace VSProjectZip.Core.FileManagement;
+﻿namespace VSProjectZip.Core.FileManagement;
 
 public class ZipFileImplementation : IZipFile
 {
-    public void CreateFromDirectory(string path, string destinationFileName)
+    public Task<IZipArchiveWrapper> CreateAsync(string outputPath)
     {
-        ZipFile.CreateFromDirectory(path, destinationFileName);
+        var wrapper = new ZipArchiveWrapper();
+        return wrapper.OpenAsync(outputPath);
     }
 }

@@ -2,15 +2,9 @@
 
 namespace VSProjectZip.Core.Logging;
 
-public class ConsoleLogger : ILogger
+public class ConsoleLogger(IConsoleOutput consoleOutput) : ILogger
 {
-    private readonly IConsoleOutput _consoleOutput;
-
-    public ConsoleLogger(IConsoleOutput consoleOutput)
-    {
-        _consoleOutput = consoleOutput;
-    }
-
+    private readonly IConsoleOutput _consoleOutput = consoleOutput;
 
     public void Info(string value)
     {
