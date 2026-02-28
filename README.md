@@ -33,13 +33,15 @@ To use the application you need to pass command-line arguments.
 ### Syntax
 
 ```shell
-VSProjectZip.exe <DIRECTORY_TO_ZIP>
+VSProjectZip.exe
 [--outdir=<OUTPUT_DIRECTORY>]
 [--outname=<OUTPUT_NAME>]
 [--override-skipfiles]
 [--override-skipdirs]
 [--skipfiles=<FILES_TO_SKIP>]
 [--skipdirs=<DIRECTORIES_TO_SKIP>]
+[--force]
+<DIRECTORY_TO_ZIP>
 ```
 
 ### Arguments
@@ -79,3 +81,7 @@ VSProjectZip.exe <DIRECTORY_TO_ZIP>
 
         If specified, the `--skipdirs=<DIRECTORIES_TO_SKIP>` option will use only the specified `<DIRECTORIES_TO_SKIP>`
         instead of using them along with the default set of directories.
+
+* `--force`
+
+    If specified and output file exists, it is deleted first. If not specified and output file exists, the result is an error.
