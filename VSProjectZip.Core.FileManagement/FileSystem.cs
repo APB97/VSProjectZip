@@ -1,15 +1,8 @@
 ﻿namespace VSProjectZip.Core.FileManagement;
 
-public class FileSystem : IFileSystem
+public class FileSystem(IDirectory directory, IFile file, IPath path) : IFileSystem
 {
-    public IDirectory Directory { get; }
-    public IFile File { get; }
-    public IPath Path { get; }
-
-    public FileSystem(IDirectory directory, IFile file, IPath path)
-    {
-        Directory = directory;
-        File = file;
-        Path = path;
-    }
+    public IDirectory Directory { get; } = directory;
+    public IFile File { get; } = file;
+    public IPath Path { get; } = path;
 }

@@ -1,16 +1,10 @@
 ﻿namespace VSProjectZip.Core.Parsing;
 
-public class CommandLineApp
+public class CommandLineApp(DirectoryInfo directoryToZip, IArgumentHolder arguments)
 {
-    private readonly DirectoryInfo _directoryToZip;
-    private readonly IArgumentHolder _arguments;
+    private readonly DirectoryInfo _directoryToZip = directoryToZip;
+    private readonly IArgumentHolder _arguments = arguments;
 
-    public CommandLineApp(DirectoryInfo directoryToZip, IArgumentHolder arguments)
-    {
-        _directoryToZip = directoryToZip;
-        _arguments = arguments;
-    }
-    
     public string DetermineOutputPath()
     {
         string? outputDirectory = DetermineOutputDirectory();

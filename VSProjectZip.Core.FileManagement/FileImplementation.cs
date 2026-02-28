@@ -2,11 +2,6 @@
 
 public class FileImplementation : IFile
 {
-    public void Copy(string file, string destination, bool overwrite)
-    {
-        File.Copy(file, destination, overwrite);
-    }
-
     public bool Exists(string filePath)
     {
         return File.Exists(filePath);

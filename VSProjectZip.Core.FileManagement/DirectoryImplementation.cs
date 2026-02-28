@@ -7,12 +7,6 @@ public class DirectoryImplementation : IDirectory
         return Directory.Exists(path);
     }
 
-    public IDirectoryInfo CreateDirectory(string path)
-    {
-        Directory.CreateDirectory(path);
-        return new DirectoryInfoImplementation(path);
-    }
-
     public void Delete(string path, bool recursive)
     {
         Directory.Delete(path, recursive);

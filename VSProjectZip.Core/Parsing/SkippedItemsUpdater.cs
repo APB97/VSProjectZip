@@ -2,14 +2,9 @@
 
 namespace VSProjectZip.Core.Parsing;
 
-public class SkippedItemsUpdater : ISkippedItemsUpdater
+public class SkippedItemsUpdater(ISkipItems skipItems) : ISkippedItemsUpdater
 {
-    private readonly ISkipItems _skipItems;
-
-    public SkippedItemsUpdater(ISkipItems skipItems)
-    {
-        _skipItems = skipItems;
-    }
+    private readonly ISkipItems _skipItems = skipItems;
 
     public void UpdateSkippedFiles(IReadOnlyDictionary<string, string?> argumentValues)
     {
@@ -26,7 +21,7 @@ public class SkippedItemsUpdater : ISkippedItemsUpdater
         _skipItems.ClearFiles();
     }
 
-    private IEnumerable<string> DetermineSkippedFiles(IReadOnlyDictionary<string, string?> argumentValues)
+    private static IEnumerable<string> DetermineSkippedFiles(IReadOnlyDictionary<string, string?> argumentValues)
     {
         var skipTheseFiles =
             argumentValues.TryGetValue(ArgumentCollection.SkipFiles, out var skipFiles) && skipFiles is not null
@@ -51,7 +46,7 @@ public class SkippedItemsUpdater : ISkippedItemsUpdater
         _skipItems.ClearDirectories();
     }
 
-    private IEnumerable<string> DetermineSkippedDirectories(IReadOnlyDictionary<string, string?> argumentValues)
+    private static IEnumerable<string> DetermineSkippedDirectories(IReadOnlyDictionary<string, string?> argumentValues)
     {
         return argumentValues.TryGetValue(ArgumentCollection.SkipDirectories, out var skipDirs) && skipDirs is not null
             ? skipDirs.ParseListArgument()
